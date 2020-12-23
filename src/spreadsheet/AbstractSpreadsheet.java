@@ -1,5 +1,7 @@
 package spreadsheet;
 
+import java.util.Set;
+
 public abstract class AbstractSpreadsheet
 {
 
@@ -22,6 +24,35 @@ public abstract class AbstractSpreadsheet
 	 */
 	private String version;
 
+	public AbstractSpreadsheet(IsValidFunctor isValid, Normalizer normalize, String version) 
+	{
+		this.isValid = isValid;
+		this.normalize = normalize;
+		this.version = version;
+	}
+	
+	public abstract String getSavedVersion (String filename);
+	
+	public abstract void save(String filename);
+	
+	public abstract Object getCellValue(String name);
+	
+	public abstract Iterable<String> getNamesOfAllNonemptyCells();
+	
+	public abstract Object GetCellContents(String name);
+	
+	public abstract Set<String> SetContentsOfCell(String name, String content);
+	
+	public abstract Set<String> setCellContents(String name, double number);
+	
+	protected abstract Set<String> SetCellContents(String name, String text);
+	
+	
+	
+	/******************************************************************************
+	 * Getters and setters for instance variables
+	 *****************************************************************************/
+	
 	/**
 	 * Returns true if this spreadsheet has been modified since it was created or
 	 * saved (whichever happened most recently); false otherwise;
@@ -94,33 +125,14 @@ public abstract class AbstractSpreadsheet
 	{
 		return version;
 	}
+	
 
 	/********************************************************
 	 * Sub-classes and sub-interfaces defined blow this block
 	 ********************************************************/
 
-	/**
-	 * IsValidFunctor is an interface which defines a method, isValid which checks
-	 * the validity of a string.
-	 */
-	public interface IsValidFunctor
-	{
-		/**
-		 * Takes a String s and returns true if that string is valid, false otherwise.
-		 */
-		public boolean isValid(String s);
-	}
+	
 
-	/**
-	 * Normalizer is an interface which defines a method, Normalizer which takes a
-	 * string and returns its normal form.
-	 */
-	public interface Normalizer
-	{
-		/**
-		 * Takes a String s and returns the normalized version of that string.
-		 */
-		public String normalize(String s);
-	}
+	
 
 }
