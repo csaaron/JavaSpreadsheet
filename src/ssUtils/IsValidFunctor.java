@@ -1,4 +1,4 @@
-package spreadsheet;
+package ssUtils;
 
 /**
  * IsValidFunctor is an interface which defines a method, isValid which checks

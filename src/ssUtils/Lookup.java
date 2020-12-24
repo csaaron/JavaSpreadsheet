@@ -1,4 +1,4 @@
-package spreadsheet;
+package ssUtils;
 
 /**
  * The lookup interface provides a method which determines the values of

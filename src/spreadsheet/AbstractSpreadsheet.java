@@ -2,6 +2,9 @@ package spreadsheet;
 
 import java.util.Set;
 
+import ssUtils.IsValidFunctor;
+import ssUtils.Normalizer;
+
 public abstract class AbstractSpreadsheet
 {
 

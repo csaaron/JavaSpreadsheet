@@ -1,4 +1,4 @@
-package spreadsheet;
+package ssUtils;
 
 /**
  * Normalizer is an interface which defines a method, Normalizer which takes a

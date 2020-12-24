@@ -1,4 +1,4 @@
-package spreadsheet;
+package ssUtils;
 
 /**
  * Used as a possible return value of the Formula.evaluate method.
@@ -26,12 +26,5 @@ public class FormulaError
 		return reason;
 	}
 	
-	/**
-	 * Sets the reason for this error.
-	 */
-	private void setReason(String reason)
-	{
-		this.reason = reason;
-	}
 
 }
