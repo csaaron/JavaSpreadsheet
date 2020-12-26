@@ -43,7 +43,7 @@ public class Formula
 	 */
 	public Formula(String formula)
 	{
-
+		
 	}
 
 	/**
