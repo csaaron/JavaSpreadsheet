@@ -3,7 +3,7 @@ package ssUtils;
 /**
  * 
  */
-public class FormulaFormatException extends Exception
+public class FormulaFormatException extends RuntimeException
 {
 	/**
 	 * Constructs a new FormulaFormatException with the given message and Throwable

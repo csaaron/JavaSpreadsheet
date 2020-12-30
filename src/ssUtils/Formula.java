@@ -2,7 +2,10 @@ package ssUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * epresents formulas written in standard infix notation using standard
@@ -43,7 +46,7 @@ public class Formula
 	 */
 	public Formula(String formula)
 	{
-		
+		this(formula, n -> n, v -> true);
 	}
 
 	/**
@@ -73,6 +76,22 @@ public class Formula
 	public Formula(String formula, Normalizer normalize, IsValidFunctor isValid)
 	{
 
+		variables = new HashSet<String>();
+
+		// clean, validate and normalize all tokens.
+		ArrayList<String> validCleanedTokens = cleanAndValidate(getTokens(formula), normalize, isValid);
+
+		for (String s : validCleanedTokens)
+		{
+			variables.add(s);
+		}
+
+		// verify correct syntax
+		verifySyntaxAndGetVariables(validCleanedTokens);
+
+		// store valid function
+		tokens = validCleanedTokens;
+
 	}
 
 	/**
@@ -86,7 +105,33 @@ public class Formula
 	 */
 	private ArrayList<String> cleanAndValidate(Iterable<String> tokens, Normalizer normalize, IsValidFunctor isValid)
 	{
-		return null;
+		ArrayList<String> cleanedAndValidated = new ArrayList<String>();
+		Normalizer doubleNormalizer = new DoubleNormalize();
+		for (String token : tokens)
+		{
+			// normalize the token
+			String validating = normalize.normalize(token);
+			// token could have been a double, if so parse it and move it to a standard form
+			validating = doubleNormalizer.normalize(validating);
+
+			// verify this is a valid token
+			if (!isValidToken(validating))
+			{
+				String message = "Token, \"" + token + ",\" was invalid when normalized to \"" + validating + "\"";
+				throw new FormulaFormatException(message);
+			}
+
+			// validate variable names
+			if (ExtensionMethods.startsWithLetterOrUnderscore(validating) && !isValidToken(validating))
+			{
+				String message = "Variable, \"" + token + ",\" was invalid when normalized to \"" + validating + "\"";
+				throw new FormulaFormatException(message);
+			}
+			
+			cleanedAndValidated.add(validating);
+		}
+
+		return cleanedAndValidated;
 	}
 
 	/**
@@ -341,7 +386,31 @@ public class Formula
 	 */
 	private static Iterable<String> getTokens(String formula)
 	{
-		return null;
+		// Patterns for individual tokens
+		String lpPattern = "\\(";
+		String rpPattern = "\\)";
+		String opPattern = "[\\+\\-*/]";
+		String varPattern = "[a-zA-Z_](?: [a-zA-Z_]|\\d)*";
+		String doublePattern = "(?: \\d+\\.\\d* | \\d*\\.\\d+ | \\d+ ) (?: [eE][\\+-]?\\d+)?";
+		String spacePattern = "\\s+";
+
+		// Overall pattern
+		String pattern = String.format("(%s) | (%s) | (%s) | (%s) | (%s) | (%s)", lpPattern, rpPattern, opPattern,
+				varPattern, doublePattern, spacePattern);
+
+		Pattern compiledPattern = Pattern.compile(pattern);
+		String[] splitTokens = compiledPattern.split(formula);
+
+		ArrayList<String> tokens = new ArrayList<String>();
+		for (String s : splitTokens)
+		{
+			if (!Pattern.matches("^\\s*$", s))
+			{
+				tokens.add(s);
+			}
+		}
+
+		return tokens;
 	}
 
 	/**
@@ -354,7 +423,10 @@ public class Formula
 	 */
 	private static boolean isValidToken(String token)
 	{
-		return true;
+		Double d = 0.0;
+		// a pattern that matches all valid tokens without white space
+		String pattern = "( ^\\($ ) | ( ^\\)$ ) | (^-$) | ( ^\\+$ ) | ( ^\\*$ ) | ( ^/$ ) | ( ^[a-zA-Z_][a-zA-Z\\d_]*$ )";
+		return Pattern.matches(pattern, token) || ExtensionMethods.doubleTryParse(token, d);
 	}
 
 	/**
@@ -433,6 +505,37 @@ public class Formula
 		public static boolean hasNext(ArrayList<String> list, int index)
 		{
 			return (list.size() > (index + 1));
+		}
+
+		/**
+		 * Takes a String object and attempts to parse it to a Double. If successful,
+		 * output will contain the value of the resulting value of s, else it will be
+		 * left alone. Will return true if successful else, returns false.
+		 * 
+		 * @param s      - A string to be converted into a double
+		 * @param output - A Double object that when when successful, will contain the
+		 *               converted value of s.
+		 * @return - Returns True if s was converted successfully, else returns false.
+		 */
+		public static boolean doubleTryParse(String s, Double output)
+		{
+			// this should work the same way C# does double.TryParse(String,out double).
+			// Using this method to avoid exceptions.
+
+			try
+			{
+				output = Double.parseDouble(s);
+				return true;
+			}
+			catch (NumberFormatException e)
+			{
+				return false;
+			}
+			catch (NullPointerException f)
+			{
+				return false;
+			}
+
 		}
 
 	}
