@@ -131,7 +131,7 @@ public class Formula
 				String message = "Variable, \"" + token + ",\" was invalid when normalized to \"" + validating + "\"";
 				throw new FormulaFormatException(message);
 			}
-			
+
 			cleanedAndValidated.add(validating);
 		}
 
@@ -205,8 +205,8 @@ public class Formula
 		double value1 = values.pop();
 		// pop operator once
 		String op = operators.pop();
-		
-		//apply operator and push the result to the values stack
+
+		// apply operator and push the result to the values stack
 		values.push(applyOperator(value1, value2, op));
 	}
 
@@ -221,23 +221,22 @@ public class Formula
 	private static double applyOperator(double val1, double val2, String op)
 	{
 		double result = 0;
-		switch(op.charAt(0))
+		switch (op.charAt(0))
 		{
-			case '+' : 
+			case '+':
 				return val1 + val2;
-			case '-' :
+			case '-':
 				return val1 - val2;
-			case '*' :
-				return val1*val2;
-			case '/' :
+			case '*':
+				return val1 * val2;
+			case '/':
 				if (val2 == 0)
 				{
 					throw new ArgumentAccessException("Cannot divide by zero");
 				}
-				return val1/val2;
+				return val1 / val2;
 		}
-		
-		
+
 		return result;
 	}
 
@@ -256,7 +255,13 @@ public class Formula
 	 */
 	public Iterable<String> getVariables()
 	{
-		return null;
+		HashSet<String> vars = new HashSet<String>(variables.size());
+		for (String v : variables)
+		{
+			vars.add(v.toString());
+		}
+		
+		return vars;
 	}
 
 	/**
