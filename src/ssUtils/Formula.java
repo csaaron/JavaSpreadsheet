@@ -7,6 +7,8 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.sun.tools.classfile.StackMapTable_attribute.same_locals_1_stack_item_frame_extended;
+
 /**
  * epresents formulas written in standard infix notation using standard
  * precedence rules. The allowed symbols are non-negative numbers written using
@@ -173,7 +175,17 @@ public class Formula
 	 */
 	private static void handleDouble(double t, Stack<Double> values, Stack<String> operators)
 	{
-
+		// operand is a double, check if operator * or / is at top of stack and apply it
+		if (operators.peek().equals("*") || operators.peek().equals("/"))
+		{
+			double result = applyOperator(values.pop(), t, operators.pop());
+			values.push(result);
+		}
+		// * or / is not at top of operator stack, push operand to top of stack
+		else
+		{
+			values.push(t);
+		}
 	}
 
 	/**
@@ -186,7 +198,14 @@ public class Formula
 	 */
 	private static void applyOperatorStack(Stack<Double> values, Stack<String> operators)
 	{
-
+		// pop value twice
+		double value2 = values.pop();
+		double value1 = values.pop();
+		// pop operator once
+		String op = operators.pop();
+		
+		//apply operator and push the result to the values stack
+		values.push(applyOperator(value1, value2, op));
 	}
 
 	/**
