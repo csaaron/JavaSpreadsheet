@@ -7,6 +7,8 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.junit.jupiter.params.aggregator.ArgumentAccessException;
+
 import com.sun.tools.classfile.StackMapTable_attribute.same_locals_1_stack_item_frame_extended;
 
 /**
@@ -218,7 +220,25 @@ public class Formula
 	 */
 	private static double applyOperator(double val1, double val2, String op)
 	{
-		return 0;
+		double result = 0;
+		switch(op.charAt(0))
+		{
+			case '+' : 
+				return val1 + val2;
+			case '-' :
+				return val1 - val2;
+			case '*' :
+				return val1*val2;
+			case '/' :
+				if (val2 == 0)
+				{
+					throw new ArgumentAccessException("Cannot divide by zero");
+				}
+				return val1/val2;
+		}
+		
+		
+		return result;
 	}
 
 	/**
