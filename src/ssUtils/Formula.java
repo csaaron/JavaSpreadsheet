@@ -278,7 +278,12 @@ public class Formula
 	@Override
 	public String toString()
 	{
-		return "";
+		StringBuilder s = new StringBuilder();
+		for (String token : tokens)
+		{
+			s.append(token);
+		}
+		return s.toString();
 	}
 
 	/**
@@ -305,7 +310,7 @@ public class Formula
 	@Override
 	public boolean equals(Object obj)
 	{
-		return false;
+		return  (obj != null) && (obj instanceof Formula) && (this.toString().equals(obj.toString()));
 	}
 
 	/**
@@ -317,7 +322,7 @@ public class Formula
 	@Override
 	public int hashCode()
 	{
-		return 0;
+		return this.toString().hashCode();
 	}
 
 	/**
