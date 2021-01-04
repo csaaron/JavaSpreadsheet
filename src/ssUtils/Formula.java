@@ -7,10 +7,6 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
-
-
-
 /**
  * epresents formulas written in standard infix notation using standard
  * precedence rules. The allowed symbols are non-negative numbers written using
@@ -334,7 +330,38 @@ public class Formula
 	 */
 	private void verifySyntaxAndGetVariables(ArrayList<String> cleanedTokens)
 	{
+		// C complexity rules
+		oneTokenRule(cleanedTokens);
+		startingTokenRule(cleanedTokens);
+		endingTokenRule(cleanedTokens);
 
+		// N complexity rules
+		// counter for parentheses rules
+		int parenthesesCount = 0;
+		for (int i = 0; i < cleanedTokens.size(); i++)
+		{
+			if (cleanedTokens.get(i).equals("("))
+			{
+				parenthesesCount++;
+				parenthesesFollowRule(cleanedTokens, i);
+			}
+			else if (ExtensionMethods.isOperator(cleanedTokens.get(i)))
+			{
+				parenthesesFollowRule(cleanedTokens, i);
+			}
+			else if (cleanedTokens.get(i).equals(")"))
+			{
+				rightParenthesesRule(--parenthesesCount);
+				extraFollowRule(cleanedTokens, i);
+			}
+			else if (ExtensionMethods.startsWithLetterOrUnderscore(cleanedTokens.get(i))
+					|| ExtensionMethods.startsWithNumber(cleanedTokens.get(i)))
+			{
+				extraFollowRule(cleanedTokens, i);
+			}
+		}
+		
+		balancedParenthesesRule(parenthesesCount);
 	}
 
 	/**
