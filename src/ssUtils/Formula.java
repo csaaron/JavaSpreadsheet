@@ -147,7 +147,7 @@ public class Formula
 	 * Formula("x+7").Evaluate(L) is 9
 	 * 
 	 * Given a variable symbol as its parameter, lookup returns the variable's value
-	 * (if it has one) or throws an ArgumentException (otherwise).
+	 * (if it has one) or throws an IllegalArgumentException (otherwise).
 	 * 
 	 * If no undefined variables or divisions by zero are encountered when
 	 * evaluating this Formula, the value is returned. Otherwise, a FormulaError is
@@ -158,7 +158,96 @@ public class Formula
 	 */
 	public Object evaluate(Lookup lookup)
 	{
-		return null;
+		Stack<Double> values = new Stack<Double>();
+		Stack<String> operators = new Stack<String>();
+
+		// this is the main body of the algorithm where the expression is evaluated
+		for (String token : tokens)
+		{
+			Double operand = 0.0;
+			if (ExtensionMethods.doubleTryParse(token, operand))
+			{
+				try
+				{
+					handleDouble(operand, values, operators);
+				}
+				catch (IllegalArgumentException e)
+				{
+					return new FormulaError(e.getMessage());
+				}
+			}
+			// check if token is variable
+			else if (ExtensionMethods.startsWithLetterOrUnderscore(token))
+			{
+				try
+				{
+					operand = lookup.lookup(token);
+					handleDouble(operand, values, operators);
+				}
+				catch (IllegalArgumentException e)
+				{
+					return new FormulaError(e.getMessage());
+				}
+			}
+			else if (token.equals("+") || token.equals("-"))
+			{
+				// if plus or minus is at top of operator stack,
+				// apply it to the top two operands on top of values stack
+				if (ExtensionMethods.isAtTop(operators, "+") || ExtensionMethods.isAtTop(operators, "-"))
+				{
+					applyOperatorStack(values, operators);
+				}
+
+				// push + or - to operators stack
+				operators.push(token);
+			}
+			else if (token.equals("*") || token.equals("/"))
+			{
+				operators.push(token);
+			}
+			else if (token.equals("("))
+			{
+				operators.push(token);
+			}
+			else if (token.equals(")"))
+			{
+				// if plus or minus is at top of operator stack,
+				// apply it to the top two operands on top of values stack
+				if (ExtensionMethods.isAtTop(operators, "+") || ExtensionMethods.isAtTop(operators, "-"))
+				{
+					applyOperatorStack(values, operators);
+				}
+
+				// now that + or - has been applied, next operator on stack
+				// should be "("
+				operators.pop();
+				
+				if (ExtensionMethods.isAtTop(operators, "*") || ExtensionMethods.isAtTop(operators, "/"))
+				{
+					try
+					{
+						applyOperatorStack(values, operators);
+					}
+					catch (IllegalArgumentException e)
+					{
+						return new FormulaError(e.getMessage());
+					}
+				}
+			}
+			
+		}
+		// the last token has been processed
+		if(operators.size() == 0)
+		{
+			return values.pop();
+		}
+		else
+		{
+			// the only operator token should be '+' or '-'
+			applyOperatorStack(values, operators);
+			return values.pop();
+		}
+		
 	}
 
 	/**
@@ -360,7 +449,7 @@ public class Formula
 				extraFollowRule(cleanedTokens, i);
 			}
 		}
-		
+
 		balancedParenthesesRule(parenthesesCount);
 	}
 
@@ -372,7 +461,19 @@ public class Formula
 	 */
 	private void extraFollowRule(ArrayList<String> cleanedTokens, int index)
 	{
-
+		// check next token
+		if (ExtensionMethods.hasNext(cleanedTokens, index))
+		{
+			String nextToken = cleanedTokens.get(index + 1);
+			if (!(ExtensionMethods.isOperator(nextToken) || nextToken.equals(")")))
+			{
+				String message = "Extra Follow Rule Violation: Any token that immediately follows "
+						+ "a number, a variable, or a closing parenthesis must be either an operator "
+						+ "or a closing parenthesis.";
+				throw new FormulaFormatException(message);
+			}
+		}
+		// these tokens can end an expression
 	}
 
 	/**
@@ -384,7 +485,27 @@ public class Formula
 	 */
 	private void parenthesesFollowRule(ArrayList<String> cleanedTokens, int index)
 	{
+		String message = "Parentheses Follow Rule Violation: Any token that immediately follows an "
+				+ "opening parenthesis or an operator must be either a number, a variable, or an "
+				+ "opening parenthesis.";
 
+		// check next token
+		if (ExtensionMethods.hasNext(cleanedTokens, index))
+		{
+			String nextToken = cleanedTokens.get(index + 1);
+			if (!(ExtensionMethods.startsWithNumber(nextToken)
+					|| ExtensionMethods.startsWithLetterOrUnderscore(nextToken) || nextToken.equals("(")))
+			{
+
+				throw new FormulaFormatException(message);
+			}
+		}
+
+		// these tokens cannot end an expression, there should have been a next token
+		else
+		{
+			throw new FormulaFormatException(message);
+		}
 	}
 
 	/**
@@ -395,7 +516,17 @@ public class Formula
 	 */
 	private void endingTokenRule(ArrayList<String> cleanedTokens)
 	{
-
+		if (cleanedTokens.size() > 0)
+		{
+			String endingToken = cleanedTokens.get(cleanedTokens.size() - 1);
+			if (!(ExtensionMethods.startsWithNumber(endingToken)
+					|| ExtensionMethods.startsWithLetterOrUnderscore(endingToken) || endingToken.equals(")")))
+			{
+				String message = "Ending Token Rule Violation: The last token of an expression must be a number, a "
+						+ "variable, or a closing parenthesis.";
+				throw new FormulaFormatException(message);
+			}
+		}
 	}
 
 	/**
@@ -406,7 +537,17 @@ public class Formula
 	 */
 	private void startingTokenRule(ArrayList<String> cleanedTokens)
 	{
-
+		if (cleanedTokens.size() > 0)
+		{
+			String startingToken = cleanedTokens.get(0);
+			if (!(ExtensionMethods.startsWithNumber(startingToken)
+					|| ExtensionMethods.startsWithLetterOrUnderscore(startingToken) || startingToken.equals("(")))
+			{
+				String message = "Starting Token Rule Violation: The first token of an expression must be "
+						+ "a number, a variable, or an opening parenthesis";
+				throw new FormulaFormatException(message);
+			}
+		}
 	}
 
 	/**
@@ -416,7 +557,11 @@ public class Formula
 	 */
 	private void oneTokenRule(ArrayList<String> cleanedTokens)
 	{
-
+		if (cleanedTokens.size() < 1)
+		{
+			String message = "One Token Rule Violation: Formula must contain at least one token.";
+			throw new FormulaFormatException(message);
+		}
 	}
 
 	/**
@@ -432,7 +577,12 @@ public class Formula
 	 */
 	private void balancedParenthesesRule(int parenthesesCount)
 	{
-
+		if (parenthesesCount != 0)
+		{
+			String message = "Balanced Parentheses Rule Violation: The total number of opening "
+					+ "parentheses must equal the total number of closing parentheses";
+			throw new FormulaFormatException(message);
+		}
 	}
 
 	/**
@@ -450,7 +600,12 @@ public class Formula
 	 */
 	private void rightParenthesesRule(int parenthesesCount)
 	{
-
+		if (parenthesesCount < 0)
+		{
+			String message = "Right Parentheses Rule Violation: Number of closing parentheses greater than "
+					+ "opening parentheses when read from left to right";
+			throw new FormulaFormatException(message);
+		}
 	}
 
 	/**
