@@ -7,9 +7,9 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.junit.jupiter.params.aggregator.ArgumentAccessException;
 
-import com.sun.tools.classfile.StackMapTable_attribute.same_locals_1_stack_item_frame_extended;
+
+
 
 /**
  * epresents formulas written in standard infix notation using standard
@@ -216,7 +216,7 @@ public class Formula
 	 * 
 	 * The only valid operators are "+", "-", "*", and "/".
 	 * 
-	 * If val2 = 0 and op = "/" will throw ArgumentException.
+	 * If val2 = 0 and op = "/" will throw IllegalArgumentException.
 	 */
 	private static double applyOperator(double val1, double val2, String op)
 	{
@@ -232,7 +232,7 @@ public class Formula
 			case '/':
 				if (val2 == 0)
 				{
-					throw new ArgumentAccessException("Cannot divide by zero");
+					throw new IllegalArgumentException("Cannot divide by zero");
 				}
 				return val1 / val2;
 		}
@@ -260,7 +260,7 @@ public class Formula
 		{
 			vars.add(v.toString());
 		}
-		
+
 		return vars;
 	}
 
@@ -310,7 +310,7 @@ public class Formula
 	@Override
 	public boolean equals(Object obj)
 	{
-		return  (obj != null) && (obj instanceof Formula) && (this.toString().equals(obj.toString()));
+		return (obj != null) && (obj instanceof Formula) && (this.toString().equals(obj.toString()));
 	}
 
 	/**
@@ -435,28 +435,27 @@ public class Formula
 	 */
 	private static Iterable<String> getTokens(String formula)
 	{
-		// Patterns for individual tokens
+		// Patterns for individual tokens. Cannot contain white space
 		String lpPattern = "\\(";
 		String rpPattern = "\\)";
-		String opPattern = "[\\+\\-*/]";
-		String varPattern = "[a-zA-Z_](?: [a-zA-Z_]|\\d)*";
-		String doublePattern = "(?: \\d+\\.\\d* | \\d*\\.\\d+ | \\d+ ) (?: [eE][\\+-]?\\d+)?";
+		String opPattern = "[\\+\\-*\\/]";
+		String varPattern = "[a-zA-Z_](?:[a-zA-Z_]|\\d)*";
+		String doublePattern = "(?:\\d+\\.\\d*|\\d*\\.\\d+|\\d+)(?:[eE][\\+-]?\\d+)?";
 		String spacePattern = "\\s+";
 
 		// Overall pattern
-		String pattern = String.format("(%s) | (%s) | (%s) | (%s) | (%s) | (%s)", lpPattern, rpPattern, opPattern,
-				varPattern, doublePattern, spacePattern);
+		String pattern = String.format("(%s)|(%s)|(%s)|(%s)|(%s)|(%s)", lpPattern, rpPattern, opPattern, varPattern,
+				doublePattern, spacePattern);
 
 		Pattern compiledPattern = Pattern.compile(pattern);
-		String[] splitTokens = compiledPattern.split(formula);
+		Matcher matcher = compiledPattern.matcher(formula);
 
 		ArrayList<String> tokens = new ArrayList<String>();
-		for (String s : splitTokens)
+		while (!matcher.hitEnd() && matcher.find())
 		{
-			if (!Pattern.matches("^\\s*$", s))
-			{
-				tokens.add(s);
-			}
+			// Skip tokens consisting only of white space
+			if (!matcher.group().matches("^\\s*$"))
+				tokens.add(matcher.group());
 		}
 
 		return tokens;
@@ -474,7 +473,7 @@ public class Formula
 	{
 		Double d = 0.0;
 		// a pattern that matches all valid tokens without white space
-		String pattern = "( ^\\($ ) | ( ^\\)$ ) | (^-$) | ( ^\\+$ ) | ( ^\\*$ ) | ( ^/$ ) | ( ^[a-zA-Z_][a-zA-Z\\d_]*$ )";
+		String pattern = "(^\\($)|(^\\)$)|(^-$)|(^\\+$)|(^\\*$)|( ^\\/$)|(^[a-zA-Z_][a-zA-Z\\d_]*$)";
 		return Pattern.matches(pattern, token) || ExtensionMethods.doubleTryParse(token, d);
 	}
 
