@@ -8,7 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * epresents formulas written in standard infix notation using standard
+ * Represents formulas written in standard infix notation using standard
  * precedence rules. The allowed symbols are non-negative numbers written using
  * double-precision floating-point syntax; variables that consist of a letter or
  * underscore followed by zero or more letters, underscores, or digits;
@@ -79,11 +79,14 @@ public class Formula
 		variables = new HashSet<String>();
 
 		// clean, validate and normalize all tokens.
-		ArrayList<String> validCleanedTokens = cleanAndValidate(getTokens(formula), normalize, isValid);
+		ArrayList<String> validCleanedTokens = cleanAndValidate(formula, normalize, isValid);
 
 		for (String s : validCleanedTokens)
 		{
-			variables.add(s);
+			if (ExtensionMethods.startsWithLetterOrUnderscore(s))
+			{
+				variables.add(s);
+			}
 		}
 
 		// verify correct syntax
@@ -103,8 +106,17 @@ public class Formula
 	 * Will return an ArrayList<String> of all valid tokens which are cleaned and
 	 * validated.
 	 */
-	private ArrayList<String> cleanAndValidate(Iterable<String> tokens, Normalizer normalize, IsValidFunctor isValid)
+	private ArrayList<String> cleanAndValidate(String formula, Normalizer normalize, IsValidFunctor isValid)
 	{
+		Iterable<String> tokens = getTokens(formula);
+		String strippedFormula = stripWhiteSpace(formula);
+		
+		if(!joinTokens(tokens).equals(strippedFormula))
+		{
+			String message = "Formula contains invalid characters";
+			throw new FormulaFormatException(message);
+		}
+		
 		ArrayList<String> cleanedAndValidated = new ArrayList<String>();
 		Normalizer doubleNormalizer = new DoubleNormalize();
 		for (String token : tokens)
@@ -122,7 +134,7 @@ public class Formula
 			}
 
 			// validate variable names
-			if (ExtensionMethods.startsWithLetterOrUnderscore(validating) && !isValidToken(validating))
+			if (ExtensionMethods.startsWithLetterOrUnderscore(validating) && !isValid.isValid(validating))
 			{
 				String message = "Variable, \"" + token + ",\" was invalid when normalized to \"" + validating + "\"";
 				throw new FormulaFormatException(message);
@@ -165,13 +177,14 @@ public class Formula
 		for (String token : tokens)
 		{
 			Double operand = 0.0;
-			if (ExtensionMethods.doubleTryParse(token, operand))
+			if (ExtensionMethods.isDoubleString(token))
 			{
 				try
 				{
+					operand = Double.valueOf(token);
 					handleDouble(operand, values, operators);
 				}
-				catch (IllegalArgumentException e)
+				catch (Exception e)
 				{
 					return new FormulaError(e.getMessage());
 				}
@@ -184,7 +197,7 @@ public class Formula
 					operand = lookup.lookup(token);
 					handleDouble(operand, values, operators);
 				}
-				catch (IllegalArgumentException e)
+				catch (Exception e)
 				{
 					return new FormulaError(e.getMessage());
 				}
@@ -221,23 +234,23 @@ public class Formula
 				// now that + or - has been applied, next operator on stack
 				// should be "("
 				operators.pop();
-				
+
 				if (ExtensionMethods.isAtTop(operators, "*") || ExtensionMethods.isAtTop(operators, "/"))
 				{
 					try
 					{
 						applyOperatorStack(values, operators);
 					}
-					catch (IllegalArgumentException e)
+					catch (Exception e)
 					{
 						return new FormulaError(e.getMessage());
 					}
 				}
 			}
-			
+
 		}
 		// the last token has been processed
-		if(operators.size() == 0)
+		if (operators.size() == 0)
 		{
 			return values.pop();
 		}
@@ -247,7 +260,7 @@ public class Formula
 			applyOperatorStack(values, operators);
 			return values.pop();
 		}
-		
+
 	}
 
 	/**
@@ -263,7 +276,7 @@ public class Formula
 	private static void handleDouble(double t, Stack<Double> values, Stack<String> operators)
 	{
 		// operand is a double, check if operator * or / is at top of stack and apply it
-		if (operators.peek().equals("*") || operators.peek().equals("/"))
+		if (!operators.empty() && (operators.peek().equals("*") || operators.peek().equals("/")))
 		{
 			double result = applyOperator(values.pop(), t, operators.pop());
 			values.push(result);
@@ -628,10 +641,10 @@ public class Formula
 		// Overall pattern
 		String pattern = String.format("(%s)|(%s)|(%s)|(%s)|(%s)|(%s)", lpPattern, rpPattern, opPattern, varPattern,
 				doublePattern, spacePattern);
-
+		
 		Pattern compiledPattern = Pattern.compile(pattern);
 		Matcher matcher = compiledPattern.matcher(formula);
-
+		
 		ArrayList<String> tokens = new ArrayList<String>();
 		while (!matcher.hitEnd() && matcher.find())
 		{
@@ -641,6 +654,35 @@ public class Formula
 		}
 
 		return tokens;
+	}
+	
+	/**
+	 * Takes a String s, and returns a copy of that string, with all white space stripped. 
+	 */
+	private static String stripWhiteSpace(String s)
+	{
+		String spacePattern = "\\s+";
+		String[] tokens =s.split(spacePattern);
+		
+		StringBuilder strippedWhiteSpace = new StringBuilder();
+		for (String token : tokens)
+		{
+			strippedWhiteSpace.append(token);
+		}
+		return strippedWhiteSpace.toString();
+	}
+	
+	/**
+	 * Joins the strings contained in tokens into a single string. 
+	 */
+	private static String joinTokens(Iterable<String> tokens)
+	{
+		StringBuilder tokenString = new StringBuilder();
+		for (String token : tokens)
+		{
+			tokenString.append(token);
+		}
+		return tokenString.toString();
 	}
 
 	/**
@@ -653,10 +695,9 @@ public class Formula
 	 */
 	private static boolean isValidToken(String token)
 	{
-		Double d = 0.0;
 		// a pattern that matches all valid tokens without white space
-		String pattern = "(^\\($)|(^\\)$)|(^-$)|(^\\+$)|(^\\*$)|( ^\\/$)|(^[a-zA-Z_][a-zA-Z\\d_]*$)";
-		return Pattern.matches(pattern, token) || ExtensionMethods.doubleTryParse(token, d);
+		String pattern = "(^\\($)|(^\\)$)|(^-$)|(^\\+$)|(^\\*$)|(^\\/$)|(^[a-zA-Z_][a-zA-Z\\d_]*$)";
+		return Pattern.matches(pattern, token) || ExtensionMethods.isDoubleString(token);
 	}
 
 	/**
@@ -672,15 +713,11 @@ public class Formula
 		@Override
 		public String normalize(String s)
 		{
-			try
+			if (ExtensionMethods.isDoubleString(s))
 			{
 				return Double.valueOf(s).toString();
 			}
-			catch (NumberFormatException e)
-			{
-				return s;
-			}
-			catch (NullPointerException e)
+			else
 			{
 				return s;
 			}
@@ -691,7 +728,7 @@ public class Formula
 	 * Helpful static methods to use with standard library items for implementing
 	 * the Formula class.
 	 */
-	private static class ExtensionMethods
+	public static class ExtensionMethods
 	{
 		/**
 		 * Returns true if string begins with a number
@@ -716,7 +753,7 @@ public class Formula
 		 */
 		public static boolean isOperator(String s)
 		{
-			return (s.equals('*') || s.equals('/') || s.equals("+") || s.equals("-"));
+			return (s.equals("*") || s.equals("/") || s.equals("+") || s.equals("-"));
 		}
 
 		/**
@@ -738,33 +775,58 @@ public class Formula
 		}
 
 		/**
-		 * Takes a String object and attempts to parse it to a Double. If successful,
-		 * output will contain the value of the resulting value of s, else it will be
-		 * left alone. Will return true if successful else, returns false.
-		 * 
-		 * @param s      - A string to be converted into a double
-		 * @param output - A Double object that when when successful, will contain the
-		 *               converted value of s.
-		 * @return - Returns True if s was converted successfully, else returns false.
+		 * Takes in a string s and returns true if s can successfully be parsed to a
+		 * Double, else returns false.
 		 */
-		public static boolean doubleTryParse(String s, Double output)
+		public static boolean isDoubleString(String s)
 		{
-			// this should work the same way C# does double.TryParse(String,out double).
-			// Using this method to avoid exceptions.
 
-			try
-			{
-				output = Double.parseDouble(s);
-				return true;
-			}
-			catch (NumberFormatException e)
+			if (s == null)
 			{
 				return false;
 			}
-			catch (NullPointerException f)
-			{
-				return false;
-			}
+
+			// prescribed method from Double.valueOf(String) method documentation for
+			// outputting a double from string without throwing exception.
+			// Copied directly from documentation.
+
+			final String Digits = "(\\p{Digit}+)";
+			final String HexDigits = "(\\p{XDigit}+)";
+			// an exponent is 'e' or 'E' followed by an optionally
+			// signed decimal integer.
+			final String Exp = "[eE][+-]?" + Digits;
+			final String fpRegex = ("[\\x00-\\x20]*" + // Optional leading "whitespace"
+					"[+-]?(" + // Optional sign character
+					"NaN|" + // "NaN" string
+					"Infinity|" + // "Infinity" string
+
+					// A decimal floating-point string representing a finite positive
+					// number without a leading sign has at most five basic pieces:
+					// Digits . Digits ExponentPart FloatTypeSuffix
+					//
+					// Since this method allows integer-only strings as input
+					// in addition to strings of floating-point literals, the
+					// two sub-patterns below are simplifications of the grammar
+					// productions from section 3.10.2 of
+					// The Java Language Specification.
+
+					// Digits ._opt Digits_opt ExponentPart_opt FloatTypeSuffix_opt
+					"(((" + Digits + "(\\.)?(" + Digits + "?)(" + Exp + ")?)|" +
+
+					// . Digits ExponentPart_opt FloatTypeSuffix_opt
+					"(\\.(" + Digits + ")(" + Exp + ")?)|" +
+
+					// Hexadecimal strings
+					"((" +
+					// 0[xX] HexDigits ._opt BinaryExponent FloatTypeSuffix_opt
+					"(0[xX]" + HexDigits + "(\\.)?)|" +
+
+					// 0[xX] HexDigits_opt . HexDigits BinaryExponent FloatTypeSuffix_opt
+					"(0[xX]" + HexDigits + "?(\\.)" + HexDigits + ")" +
+
+					")[pP][+-]?" + Digits + "))" + "[fFdD]?))" + "[\\x00-\\x20]*");// Optional trailing "whitespace"
+
+			return Pattern.matches(fpRegex, s);
 
 		}
 

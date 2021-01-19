@@ -169,6 +169,25 @@ class FormulaTests
 	}
 
 	@Test
+	void invalidVariableNamesLookupTroubleshoot()
+	{
+		// an array with several invalid variable names
+//		String[] variables =
+//		{ "12A", "1b 2b", "1B", "%AaBbCc", "alsk$djfalsdkjf", "TheAnswerToLifeThe\nUniverseAndEverythingIs42",
+//				"p I3141592654", "129384701923874109asdfSDFss" };
+
+		String invalidVariable = "%AaBbCc";
+
+//		for (int i = 0; i < variables.length; i++)
+//		{
+		// each variable name should be invalid
+		String variable = invalidVariable;
+		assertThrows(FormulaFormatException.class, () -> new Formula(variable));
+
+//		}
+	}
+
+	@Test
 	void multiplicationAndPlusPrecidence()
 	{
 		// test standard order of operations
@@ -187,8 +206,8 @@ class FormulaTests
 
 		// the two previous expressions should not be equal when evaluated
 		Formula formula2 = new Formula("4*3+ 3");
-		assertEquals(formula2.evaluate(x -> 0), (Double) formula.evaluate(x -> 0));
-
+		assertNotEquals(formula2.evaluate(x -> 0), (Double) formula.evaluate(x -> 0));
+		
 		// force addition to be evaluated first using parenthesis
 		expected = 21;
 		expression = "(4+3)*3";
@@ -492,7 +511,7 @@ class FormulaTests
 	void tryPassingNullString()
 	{
 		String expression = null;
-		assertThrows(FormulaFormatException.class, () -> new Formula(expression));
+		assertThrows(NullPointerException.class, () -> new Formula(expression));
 	}
 
 	@Test
@@ -534,7 +553,7 @@ class FormulaTests
 		String expression = "(2.0 + b5 * 3) - (4 + 7 / 4 -3+8-1* \t\t\t\n  zd56) / (b5)";
 		double expected = 5.125;
 		Formula formula = new Formula(expression);
-		assertEquals(expected, (Double) formula.evaluate(x -> x == "b5" ? 2 : 5));
+		assertEquals(expected, (Double) formula.evaluate(x -> "b5".equals(x) ? 2 : 5));
 	}
 
 	@Test
@@ -555,7 +574,7 @@ class FormulaTests
 		// create object with multi-argument constructor
 		// there can never be valid variables in this, we should expect an error
 		assertThrows(FormulaFormatException.class,
-				() -> new Formula(expression, x -> x.toUpperCase(), s -> s == s.toLowerCase()));
+				() -> new Formula(expression, x -> x.toUpperCase(), s -> s.equals(s.toLowerCase())));
 	}
 
 	/**
@@ -583,9 +602,10 @@ class FormulaTests
 
 		Formula formula = new Formula(expression, x -> x.toUpperCase(), s -> true);
 		Lookup lookup = new LookupException();
+		Object o;
 		try
 		{
-			Object o = formula.evaluate(lookup);
+			o = formula.evaluate(lookup);
 			assertTrue(o instanceof FormulaError);
 		}
 		catch (RuntimeException e)
@@ -645,62 +665,89 @@ class FormulaTests
 
 		Formula formula = new Formula(expression);
 		String actual = formula.toString();
-		String expected = "5+5+5";
+		String expected = "5.0+5.0+5.0";
 
 		assertEquals(expected, actual);
 
 		expression = "b3 + \n\t\t25";
 		formula = new Formula(expression, x -> x.toUpperCase(), s -> s == s.toUpperCase());
 		actual = formula.toString();
-		expected = "B3+25";
-		
+		expected = "B3+25.0";
+
 		assertEquals(expected, actual);
 	}
-	
+
 	@Test
 	void equalsCheck()
 	{
 		String expression1 = "5 + 5 + \t\t5";
-        String expression2 = "5 + 5 + 5";
-        String expression3 = "5 + 5 + 5.0";
-        // create object with multi-argument constructor
-        Formula formula1 = new Formula(expression1);
-        Formula formula2 = new Formula(expression2);
-        Formula formula3 = new Formula(expression3);
+		String expression2 = "5 + 5 + 5";
+		String expression3 = "5 + 5 + 5.0";
+		// create object with multi-argument constructor
+		Formula formula1 = new Formula(expression1);
+		Formula formula2 = new Formula(expression2);
+		Formula formula3 = new Formula(expression3);
 
-        assertTrue(formula1.equals(formula2));
-        assertTrue(formula2.equals(formula1));
-        assertTrue(formula2.equals(formula3));
+		assertTrue(formula1.equals(formula2));
+		assertTrue(formula2.equals(formula1));
+		assertTrue(formula2.equals(formula3));
 
-        assertFalse(formula2.equals("5+5+5"));
-        assertFalse(formula1.equals(null));
+		assertFalse(formula2.equals("5+5+5"));
+		assertFalse(formula1.equals(null));
 
-        String expression4 = "5 + 5";
-        Formula formula4 = new Formula(expression4);
-        assertFalse(formula1.equals(formula4));
+		String expression4 = "5 + 5";
+		Formula formula4 = new Formula(expression4);
+		assertFalse(formula1.equals(formula4));
 
 	}
-	
+
+	@Test
 	void hashcodeCheck()
 	{
 		String expression1 = "5 + 5 + \t\t5";
-        String expression2 = "5 + 5 + 5";
-        String expression3 = "5 + 5 + 5.0";
-        // create object with multi-argument constructor
-        Formula formula1 = new Formula(expression1);
-        Formula formula2 = new Formula(expression2);
-        Formula formula3 = new Formula(expression3);
+		String expression2 = "5 + 5 + 5";
+		String expression3 = "5 + 5 + 5.0";
+		// create object with multi-argument constructor
+		Formula formula1 = new Formula(expression1);
+		Formula formula2 = new Formula(expression2);
+		Formula formula3 = new Formula(expression3);
 
-        assertTrue(formula1.hashCode() == formula2.hashCode());
-        assertTrue(formula2.hashCode() == formula1.hashCode());
-        assertTrue(formula2.hashCode() == formula3.hashCode());
-        assertTrue(formula2.hashCode() == "5+5+5".hashCode());
+		// System.out.println(formula1.toString());
 
-        
-        
-        String expression4 = "5 + 5";
-        Formula formula4 = new Formula(expression4);
-        assertFalse(formula1.hashCode() == formula4.hashCode());
-        assertFalse(formula2.hashCode() == "5 + 5 + 5".hashCode());
+		assertTrue(formula1.hashCode() == formula2.hashCode());
+		assertTrue(formula2.hashCode() == formula1.hashCode());
+		assertTrue(formula2.hashCode() == formula3.hashCode());
+		assertTrue(formula2.hashCode() == "5.0+5.0+5.0".hashCode());
+
+		String expression4 = "5 + 5";
+		Formula formula4 = new Formula(expression4);
+		assertFalse(formula1.hashCode() == formula4.hashCode());
+		assertFalse(formula2.hashCode() == "5 + 5 + 5".hashCode());
+	}
+
+	@Test
+	void isDoubleStringTest()
+	{
+		String double1 = "5";
+		String double2 = "5.0";
+		String double3 = "3.141592654";
+		String whitespaceString = "  \t \n";
+		String emptyString = "";
+		String scientificDouble1 = "9.7E4";
+		String scientificDouble2 = "9.7e4";
+
+		String notDouble1 = "Hello World";
+		String nullString = null;
+
+		assertTrue(Formula.ExtensionMethods.isDoubleString(double1));
+		assertTrue(Formula.ExtensionMethods.isDoubleString(double2));
+		assertTrue(Formula.ExtensionMethods.isDoubleString(double3));
+		assertTrue(Formula.ExtensionMethods.isDoubleString(scientificDouble1));
+		assertTrue(Formula.ExtensionMethods.isDoubleString(scientificDouble2));
+
+		assertFalse(Formula.ExtensionMethods.isDoubleString(notDouble1));
+		assertFalse(Formula.ExtensionMethods.isDoubleString(nullString));
+		assertFalse(Formula.ExtensionMethods.isDoubleString(whitespaceString));
+		assertFalse(Formula.ExtensionMethods.isDoubleString(emptyString));
 	}
 }
