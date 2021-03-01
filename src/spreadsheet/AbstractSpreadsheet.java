@@ -1,7 +1,8 @@
 package spreadsheet;
 
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Set;
-
 import ssUtils.IsValidFunctor;
 import ssUtils.Normalizer;
 
@@ -44,14 +45,57 @@ public abstract class AbstractSpreadsheet
 	
 	public abstract Object GetCellContents(String name);
 	
-	public abstract Set<String> SetContentsOfCell(String name, String content);
+	public abstract Set<String> setContentsOfCell(String name, String content);
 	
 	public abstract Set<String> setCellContents(String name, double number);
 	
-	protected abstract Set<String> SetCellContents(String name, String text);
+	protected abstract Set<String> setCellContents(String name, String text);
+	
+	protected abstract Iterable<String> getDirectDependents(String name);
+	
+	protected Iterable<String> getCellsToRecalculate(Set<String> names) throws CircularException
+	{
+		LinkedList<String> changed = new LinkedList<String>();
+		HashSet<String> visited = new HashSet<String>();
+		for(String name : names)
+		{
+			if(!visited.contains(name))
+			{
+				visit(name, name, visited, changed);
+			}
+		}
+		
+		return changed;
+		
+	}
+	
+	protected Iterable<String> getCellsToRecalculate(String name) throws CircularException
+	{
+
+		HashSet<String> nameSet = new HashSet<String>(1);
+		nameSet.add(name);
+		return getCellsToRecalculate(nameSet);
+	}
+	
+	private Iterable<String> visit(String start, String name, Set<String> visited, LinkedList<String> changed) throws CircularException
+	{
+		visited.add(name);
+		for (String n : getDirectDependents(name))
+		{
+			if (n.equals(start))
+			{
+				throw new CircularException(name);
+			}
+			else if (!visited.contains(n))
+			{
+				visit(start, n, visited, changed);
+			}
+		}
+		return changed;
+	}
 	
 	
-	
+
 	/******************************************************************************
 	 * Getters and setters for instance variables
 	 *****************************************************************************/

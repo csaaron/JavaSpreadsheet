@@ -2,7 +2,6 @@ package ssUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -90,7 +89,7 @@ public class Formula
 		}
 
 		// verify correct syntax
-		verifySyntaxAndGetVariables(validCleanedTokens);
+		verifySyntax(validCleanedTokens);
 
 		// store valid function
 		tokens = validCleanedTokens;
@@ -110,13 +109,13 @@ public class Formula
 	{
 		Iterable<String> tokens = getTokens(formula);
 		String strippedFormula = stripWhiteSpace(formula);
-		
-		if(!joinTokens(tokens).equals(strippedFormula))
+
+		if (!joinTokens(tokens).equals(strippedFormula))
 		{
 			String message = "Formula contains invalid characters";
 			throw new FormulaFormatException(message);
 		}
-		
+
 		ArrayList<String> cleanedAndValidated = new ArrayList<String>();
 		Normalizer doubleNormalizer = new DoubleNormalize();
 		for (String token : tokens)
@@ -424,13 +423,13 @@ public class Formula
 	}
 
 	/**
-	 * Takes a list of valid tokens making up this formula and enumerates each
-	 * variable.
+	 * Takes a list of valid tokens making up this formula and verifies the ordering
+	 * of the tokens does not contain a syntax error.
 	 * 
 	 * If there is a syntax error in the cleaned tokens, throws a
 	 * FormulaFormatException.
 	 */
-	private void verifySyntaxAndGetVariables(ArrayList<String> cleanedTokens)
+	private void verifySyntax(ArrayList<String> cleanedTokens)
 	{
 		// C complexity rules
 		oneTokenRule(cleanedTokens);
@@ -641,10 +640,10 @@ public class Formula
 		// Overall pattern
 		String pattern = String.format("(%s)|(%s)|(%s)|(%s)|(%s)|(%s)", lpPattern, rpPattern, opPattern, varPattern,
 				doublePattern, spacePattern);
-		
+
 		Pattern compiledPattern = Pattern.compile(pattern);
 		Matcher matcher = compiledPattern.matcher(formula);
-		
+
 		ArrayList<String> tokens = new ArrayList<String>();
 		while (!matcher.hitEnd() && matcher.find())
 		{
@@ -655,15 +654,16 @@ public class Formula
 
 		return tokens;
 	}
-	
+
 	/**
-	 * Takes a String s, and returns a copy of that string, with all white space stripped. 
+	 * Takes a String s, and returns a copy of that string, with all white space
+	 * stripped.
 	 */
 	private static String stripWhiteSpace(String s)
 	{
 		String spacePattern = "\\s+";
-		String[] tokens =s.split(spacePattern);
-		
+		String[] tokens = s.split(spacePattern);
+
 		StringBuilder strippedWhiteSpace = new StringBuilder();
 		for (String token : tokens)
 		{
@@ -671,9 +671,9 @@ public class Formula
 		}
 		return strippedWhiteSpace.toString();
 	}
-	
+
 	/**
-	 * Joins the strings contained in tokens into a single string. 
+	 * Joins the strings contained in tokens into a single string.
 	 */
 	private static String joinTokens(Iterable<String> tokens)
 	{
@@ -728,7 +728,7 @@ public class Formula
 	 * Helpful static methods to use with standard library items for implementing
 	 * the Formula class.
 	 */
-	public static class ExtensionMethods
+	private static class ExtensionMethods
 	{
 		/**
 		 * Returns true if string begins with a number
@@ -766,7 +766,7 @@ public class Formula
 		}
 
 		/**
-		 * Takes an inex and returns true if there is an item contained in this list
+		 * Takes an index and returns true if there is an item contained in this list
 		 * after that index, else returns false.
 		 */
 		public static boolean hasNext(ArrayList<String> list, int index)

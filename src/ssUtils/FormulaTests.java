@@ -725,29 +725,29 @@ class FormulaTests
 		assertFalse(formula2.hashCode() == "5 + 5 + 5".hashCode());
 	}
 
-	@Test
-	void isDoubleStringTest()
-	{
-		String double1 = "5";
-		String double2 = "5.0";
-		String double3 = "3.141592654";
-		String whitespaceString = "  \t \n";
-		String emptyString = "";
-		String scientificDouble1 = "9.7E4";
-		String scientificDouble2 = "9.7e4";
-
-		String notDouble1 = "Hello World";
-		String nullString = null;
-
-		assertTrue(Formula.ExtensionMethods.isDoubleString(double1));
-		assertTrue(Formula.ExtensionMethods.isDoubleString(double2));
-		assertTrue(Formula.ExtensionMethods.isDoubleString(double3));
-		assertTrue(Formula.ExtensionMethods.isDoubleString(scientificDouble1));
-		assertTrue(Formula.ExtensionMethods.isDoubleString(scientificDouble2));
-
-		assertFalse(Formula.ExtensionMethods.isDoubleString(notDouble1));
-		assertFalse(Formula.ExtensionMethods.isDoubleString(nullString));
-		assertFalse(Formula.ExtensionMethods.isDoubleString(whitespaceString));
-		assertFalse(Formula.ExtensionMethods.isDoubleString(emptyString));
-	}
+//	@Test
+//	void isDoubleStringTest()
+//	{
+//		String double1 = "5";
+//		String double2 = "5.0";
+//		String double3 = "3.141592654";
+//		String whitespaceString = "  \t \n";
+//		String emptyString = "";
+//		String scientificDouble1 = "9.7E4";
+//		String scientificDouble2 = "9.7e4";
+//
+//		String notDouble1 = "Hello World";
+//		String nullString = null;
+//
+//		assertTrue(Formula.ExtensionMethods.isDoubleString(double1));
+//		assertTrue(Formula.ExtensionMethods.isDoubleString(double2));
+//		assertTrue(Formula.ExtensionMethods.isDoubleString(double3));
+//		assertTrue(Formula.ExtensionMethods.isDoubleString(scientificDouble1));
+//		assertTrue(Formula.ExtensionMethods.isDoubleString(scientificDouble2));
+//
+//		assertFalse(Formula.ExtensionMethods.isDoubleString(notDouble1));
+//		assertFalse(Formula.ExtensionMethods.isDoubleString(nullString));
+//		assertFalse(Formula.ExtensionMethods.isDoubleString(whitespaceString));
+//		assertFalse(Formula.ExtensionMethods.isDoubleString(emptyString));
+//	}
 }
