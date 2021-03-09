@@ -29,7 +29,8 @@ import java.util.HashSet;
  * 		dependents("d") = {"d"} 
  * 		dependees("a") = {} 
  * 		dependees("b") = {"a"}
- * 		dependees("c") = {"a"} dependees("d") = {"b", "d"}
+ * 		dependees("c") = {"a"} 
+ * 		dependees("d") = {"b", "d"}
  * 
  */
 //@formatter:on
@@ -162,7 +163,10 @@ public class DependancyGraph
 	 */
 	public void replaceDependents(String s, Iterable<String> newDependents)
 	{
-		for (String r : getDependents(s))
+
+		// must copy oldDependents to avoid modifying collection being iterated over
+		Iterable<String> oldDependents = hashSetifyIterable(getDependents(s));
+		for (String r : oldDependents)
 		{
 			removeDependency(s, r);
 		}
@@ -179,7 +183,10 @@ public class DependancyGraph
 	 */
 	public void replaceDependees(String s, Iterable<String> newDependees)
 	{
-		for (String r : getDependees(s))
+
+		// must copy oldDependees to avoid modifying collection being iterated over
+		Iterable<String> oldDependees = hashSetifyIterable(getDependees(s));
+		for (String r : oldDependees)
 		{
 			removeDependency(r, s);
 		}
@@ -188,6 +195,21 @@ public class DependancyGraph
 		{
 			addDependency(t, s);
 		}
+	}
+
+	/**
+	 * Returns a new HashSet<String> containing all Strings provided by the original
+	 * Iterable
+	 */
+	private static HashSet<String> hashSetifyIterable(Iterable<String> original)
+	{
+		HashSet<String> copy = new HashSet<String>();
+		for (String s : original)
+		{
+			copy.add(s);
+		}
+
+		return copy;
 	}
 
 	/**
@@ -221,29 +243,20 @@ public class DependancyGraph
 	 */
 	private static boolean removeKeyAndHashValue(HashMap<String, HashSet<String>> dict, String key, String value)
 	{
-		if (dict.containsKey(key))
-		{
-			// We found the key, lets try to remove the edge leading to the value
-			if (dict.get(key).remove(value))
-			{
-				// because we removed a value, we must follow the invariant, if there are no
-				// more edges from the key, we must remove the underlying HashSet
-				if (dict.get(key).size() < 1)
-				{
-					dict.remove(key);
-				}
 
-				return true; // we removed something
-			}
-			else
+		// We found the key, lets try to remove the edge leading to the value
+		if (dict.containsKey(key) && dict.get(key).remove(value))
+		{
+			// because we removed a value, we must follow the invariant, if there are no
+			// more edges from the key, we must remove the underlying HashSet
+			if (dict.get(key).size() < 1)
 			{
-				return false; // we didn't remove anything
+				dict.remove(key);
 			}
 
+			return true; // we removed something
 		}
-		else
-		{
-			return false; // we didn't remove anything
-		}
+
+		return false; // we didn't remove anything
 	}
 }
