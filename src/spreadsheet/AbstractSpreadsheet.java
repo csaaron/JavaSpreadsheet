@@ -33,6 +33,8 @@ public abstract class AbstractSpreadsheet
 		this.isValid = isValid;
 		this.normalize = normalize;
 		this.version = version;
+		
+		this.changed = false;
 	}
 	
 	public abstract String getSavedVersion (String filename);
