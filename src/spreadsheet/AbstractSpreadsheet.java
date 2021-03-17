@@ -3,6 +3,8 @@ package spreadsheet;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
+
+import ssUtils.Formula;
 import ssUtils.IsValidFunctor;
 import ssUtils.Normalizer;
 
@@ -41,21 +43,23 @@ public abstract class AbstractSpreadsheet
 	
 	public abstract void save(String filename);
 	
-	public abstract Object getCellValue(String name);
+	public abstract Object getCellValue(String name) throws InvalidNameException;
 	
 	public abstract Iterable<String> getNamesOfAllNonemptyCells();
 	
-	public abstract Object GetCellContents(String name);
+	public abstract Object getCellContents(String name) throws InvalidNameException;
 	
-	public abstract Set<String> setContentsOfCell(String name, String content);
+	public abstract Set<String> setContentsOfCell(String name, String content) throws InvalidNameException, CircularException;
 	
-	public abstract Set<String> setCellContents(String name, double number);
+	protected abstract Set<String> setCellContents(String name, double number) throws InvalidNameException, CircularException;
 	
-	protected abstract Set<String> setCellContents(String name, String text);
+	protected abstract Set<String> setCellContents(String name, String text) throws InvalidNameException, CircularException;
 	
-	protected abstract Iterable<String> getDirectDependents(String name);
+	protected abstract Set<String> setCellContents(String name, Formula formula) throws InvalidNameException, CircularException;
 	
-	protected Iterable<String> getCellsToRecalculate(Set<String> names) throws CircularException
+	protected abstract Iterable<String> getDirectDependents(String name) throws InvalidNameException;
+	
+	protected Iterable<String> getCellsToRecalculate(Set<String> names) throws CircularException, InvalidNameException
 	{
 		LinkedList<String> changed = new LinkedList<String>();
 		HashSet<String> visited = new HashSet<String>();
@@ -71,7 +75,7 @@ public abstract class AbstractSpreadsheet
 		
 	}
 	
-	protected Iterable<String> getCellsToRecalculate(String name) throws CircularException
+	protected Iterable<String> getCellsToRecalculate(String name) throws CircularException, InvalidNameException
 	{
 
 		HashSet<String> nameSet = new HashSet<String>(1);
@@ -79,7 +83,7 @@ public abstract class AbstractSpreadsheet
 		return getCellsToRecalculate(nameSet);
 	}
 	
-	private Iterable<String> visit(String start, String name, Set<String> visited, LinkedList<String> changed) throws CircularException
+	private Iterable<String> visit(String start, String name, Set<String> visited, LinkedList<String> changed) throws CircularException, InvalidNameException
 	{
 		visited.add(name);
 		for (String n : getDirectDependents(name))

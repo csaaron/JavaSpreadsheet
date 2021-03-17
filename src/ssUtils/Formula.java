@@ -728,7 +728,7 @@ public class Formula
 	 * Helpful static methods to use with standard library items for implementing
 	 * the Formula class.
 	 */
-	private static class ExtensionMethods
+	public static class ExtensionMethods
 	{
 		/**
 		 * Returns true if string begins with a number
