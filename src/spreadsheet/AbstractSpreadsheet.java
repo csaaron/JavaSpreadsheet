@@ -41,7 +41,7 @@ public abstract class AbstractSpreadsheet
 	
 	public abstract String getSavedVersion (String filename);
 	
-	public abstract void save(String filename);
+	public abstract void save(String filename) throws SpreadsheetReadWriteException;
 	
 	public abstract Object getCellValue(String name) throws InvalidNameException;
 	

@@ -1,11 +1,15 @@
 package spreadsheet;
 
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
+
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
 
 import ssUtils.IsValidFunctor;
 import ssUtils.Normalizer;
@@ -77,9 +81,50 @@ public class Spreadsheet extends AbstractSpreadsheet
 	}
 
 	@Override
-	public void save(String filename)
+	public void save(String filename) throws SpreadsheetReadWriteException
 	{
-		// TODO Auto-generated method stub
+		XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
+		try
+		{
+			XMLStreamWriter xmlWriter = xmlOutputFactory.createXMLStreamWriter(new FileOutputStream(filename), "UTF-8");
+			
+			xmlWriter.writeStartDocument();
+			
+			xmlWriter.writeStartElement("spreadsheet");
+			xmlWriter.writeAttribute("version", super.getVersion());
+			xmlWriter.writeCharacters("\n\n");
+			
+			for (String cell : cells.keySet())
+			{
+				xmlWriter.writeStartElement("cell");
+				
+				xmlWriter.writeStartElement("name");
+				xmlWriter.writeCharacters(cell);
+				xmlWriter.writeEndElement(); // end cell
+				
+				xmlWriter.writeStartElement("contents");
+				xmlWriter.writeCharacters(getCellContentsString(cell));
+				xmlWriter.writeEndElement(); // end contents
+				
+				xmlWriter.writeEndElement(); // end cell
+				xmlWriter.writeCharacters("\n");
+			}
+			
+			xmlWriter.writeCharacters("\n");
+			xmlWriter.writeEndElement(); // end spreadsheet
+			
+			xmlWriter.writeEndDocument();
+			
+			xmlWriter.flush();
+			xmlWriter.close();
+		}
+		catch(Exception e)
+		{
+			String msg = "Error writing spreadsheet to file";
+			throw new SpreadsheetReadWriteException(msg);
+		}
+		
+		super.setChanged(false);
 
 	}
 
@@ -288,6 +333,29 @@ public class Spreadsheet extends AbstractSpreadsheet
 		Lookup lookup = new LookupCellValue(); // TODO: Make instance variable for default lookup.
 		for (String cell : recalcCells)
 			cells.get(cell).recalculateCellValue(lookup);
+	}
+	
+	/**
+	 * Gets a cell's contents and returns a string version of the contents.
+	 * If its contents is a double d, returns d.toString()
+	 * If its contents is a string s, returns s.
+	 * If its contents is a formula f, returns "=" prepended to f.toString()
+	 */
+	private String getCellContentsString(String cell)
+	{
+		Cell c = cells.get(cell);
+		
+		switch (c.getType())
+		{
+			case DOUBLE_TYPE:
+				Double d = (Double)cells.get(cell).getCellContents();
+				return d.toString();
+			case STRING_TYPE:
+				return (String)cells.get(cell).getCellContents();
+			default:
+				Formula f = (Formula)cells.get(cell).getCellContents();
+				return "=" + f.toString();
+		}
 	}
 
 	/**
