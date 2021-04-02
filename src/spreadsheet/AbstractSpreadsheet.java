@@ -39,7 +39,7 @@ public abstract class AbstractSpreadsheet
 		this.changed = false;
 	}
 	
-	public abstract String getSavedVersion (String filename);
+	public abstract String getSavedVersion (String filename) throws SpreadsheetReadWriteException;
 	
 	public abstract void save(String filename) throws SpreadsheetReadWriteException;
 	

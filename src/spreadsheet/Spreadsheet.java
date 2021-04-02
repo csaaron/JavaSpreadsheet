@@ -1,5 +1,6 @@
 package spreadsheet;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,8 +9,13 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
 
 import ssUtils.IsValidFunctor;
 import ssUtils.Normalizer;
@@ -62,68 +68,124 @@ public class Spreadsheet extends AbstractSpreadsheet
 	 * If any other problems such as, invalid names, circular dependencies, problems
 	 * opening reading or closing the file occurs, throws a
 	 * SpreadsheetReadWriteException.
+	 * 
+	 * @throws SpreadsheetReadWriteException
 	 */
 	public Spreadsheet(String filePath, IsValidFunctor isValid, Normalizer normalize, String version)
+			throws SpreadsheetReadWriteException
 	{
 		this(isValid, normalize, version);
+
+		SpreadsheetDocumentHandler savedContents = parseSpreadsheetXML(filePath);
+
+		if (!version.equals(savedContents.getSpreadsheetVersion()))
+		{
+			String msg = "Spreadsheet version mismatch";
+			throw new SpreadsheetReadWriteException(msg);
+		}
+
+		HashMap<String, String> savedCellContents = savedContents.getCellNamesAndContents();
+		for (String cell : savedCellContents.keySet())
+		{
+			try
+			{
+				setContentsOfCell(cell, savedCellContents.get(cell));
+			}
+			catch (Exception e)
+			{
+				throw new SpreadsheetReadWriteException(e.getMessage());
+			}
+		}
 	}
 
 	/**
 	 * Returns the version information of the spreadsheet saved in the named file.
 	 * If there are any problems opening, reading or closing the file, the method
 	 * should throw a SpreadsheetReadWriteException with an explanatory message.
+	 * 
+	 * @throws SpreadsheetReadWriteException
 	 */
 	@Override
-	public String getSavedVersion(String filename)
+	public String getSavedVersion(String filename) throws SpreadsheetReadWriteException
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return parseSpreadsheetXML(filename).getSpreadsheetVersion();
+	}
+
+	/**
+	 * Attempts to read in the Spreadsheet saved at filename. Upon successful
+	 * parsing, returns the handler that was used to read in the spreadsheet which
+	 * will contain a method for getting a HashMap of every cell and cell contents
+	 * of the file, and a method for getting the version of the spreadsheet.
+	 * 
+	 * If parsing is unsuccessful will throw SpreadsheetReadWriteException
+	 */
+	private SpreadsheetDocumentHandler parseSpreadsheetXML(String filename) throws SpreadsheetReadWriteException
+	{
+		try
+		{
+			SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+			SAXParser parser = parserFactory.newSAXParser();
+
+			XMLReader reader = parser.getXMLReader();
+
+			SpreadsheetDocumentHandler handler = new SpreadsheetDocumentHandler();
+			reader.setContentHandler(handler);
+			reader.parse(new InputSource(new FileInputStream(filename)));
+
+			return handler;
+
+		}
+		catch (Exception e)
+		{
+			throw new SpreadsheetReadWriteException("Error reading file: " + filename);
+		}
 	}
 
 	@Override
 	public void save(String filename) throws SpreadsheetReadWriteException
 	{
 		XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
+
 		try
 		{
 			XMLStreamWriter xmlWriter = xmlOutputFactory.createXMLStreamWriter(new FileOutputStream(filename), "UTF-8");
-			
+
 			xmlWriter.writeStartDocument();
-			
+
 			xmlWriter.writeStartElement("spreadsheet");
 			xmlWriter.writeAttribute("version", super.getVersion());
 			xmlWriter.writeCharacters("\n\n");
-			
+
 			for (String cell : cells.keySet())
 			{
 				xmlWriter.writeStartElement("cell");
-				
+
 				xmlWriter.writeStartElement("name");
 				xmlWriter.writeCharacters(cell);
 				xmlWriter.writeEndElement(); // end cell
-				
+
 				xmlWriter.writeStartElement("contents");
 				xmlWriter.writeCharacters(getCellContentsString(cell));
 				xmlWriter.writeEndElement(); // end contents
-				
+
 				xmlWriter.writeEndElement(); // end cell
 				xmlWriter.writeCharacters("\n");
 			}
-			
+
 			xmlWriter.writeCharacters("\n");
 			xmlWriter.writeEndElement(); // end spreadsheet
-			
+
 			xmlWriter.writeEndDocument();
-			
+
 			xmlWriter.flush();
 			xmlWriter.close();
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			String msg = "Error writing spreadsheet to file";
 			throw new SpreadsheetReadWriteException(msg);
 		}
-		
+
 		super.setChanged(false);
 
 	}
@@ -334,26 +396,26 @@ public class Spreadsheet extends AbstractSpreadsheet
 		for (String cell : recalcCells)
 			cells.get(cell).recalculateCellValue(lookup);
 	}
-	
+
 	/**
-	 * Gets a cell's contents and returns a string version of the contents.
-	 * If its contents is a double d, returns d.toString()
-	 * If its contents is a string s, returns s.
-	 * If its contents is a formula f, returns "=" prepended to f.toString()
+	 * Gets a cell's contents and returns a string version of the contents. If its
+	 * contents is a double d, returns d.toString() If its contents is a string s,
+	 * returns s. If its contents is a formula f, returns "=" prepended to
+	 * f.toString()
 	 */
 	private String getCellContentsString(String cell)
 	{
 		Cell c = cells.get(cell);
-		
+
 		switch (c.getType())
 		{
 			case DOUBLE_TYPE:
-				Double d = (Double)cells.get(cell).getCellContents();
+				Double d = (Double) cells.get(cell).getCellContents();
 				return d.toString();
 			case STRING_TYPE:
-				return (String)cells.get(cell).getCellContents();
+				return (String) cells.get(cell).getCellContents();
 			default:
-				Formula f = (Formula)cells.get(cell).getCellContents();
+				Formula f = (Formula) cells.get(cell).getCellContents();
 				return "=" + f.toString();
 		}
 	}
