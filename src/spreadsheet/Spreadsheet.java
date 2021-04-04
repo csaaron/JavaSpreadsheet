@@ -43,7 +43,7 @@ public class Spreadsheet extends AbstractSpreadsheet
 	}
 
 	/**
-	 * Creates a new spreadsheet. In a new spreadsheet, the contents of every cell
+	 * Creates a new Spreadsheet. In a new Spreadsheet, the contents of every cell
 	 * is the empty string. The provided isValid delegate is used to impose
 	 * additional restrictions to the validity of cell names. The normalize delegate
 	 * allows cell names to be stored in a standardized format prior to use. Version
@@ -58,11 +58,11 @@ public class Spreadsheet extends AbstractSpreadsheet
 	}
 
 	/**
-	 * Reads the saved spreadsheet from the file stored at the provided filePath and
-	 * uses it to construct a new spreadsheet. The new spreadsheet will use the
+	 * Reads the saved Spreadsheet from the file stored at the provided filePath and
+	 * uses it to construct a new Spreadsheet. The new spreadsheet will use the
 	 * provided validity delegate, normalization delegate and version.
 	 * 
-	 * If the version of the saved spreadsheet does not match the version parameter
+	 * If the version of the saved Spreadsheet does not match the version parameter
 	 * provided to the constructor, throws a SpreadsheetReadWriteException.
 	 * 
 	 * If any other problems such as, invalid names, circular dependencies, problems
@@ -78,6 +78,7 @@ public class Spreadsheet extends AbstractSpreadsheet
 
 		SpreadsheetDocumentHandler savedContents = parseSpreadsheetXML(filePath);
 
+		// check if version matches and if not throw appropriate exception
 		if (!version.equals(savedContents.getSpreadsheetVersion()))
 		{
 			String msg = "Spreadsheet version mismatch";
@@ -85,6 +86,8 @@ public class Spreadsheet extends AbstractSpreadsheet
 		}
 
 		HashMap<String, String> savedCellContents = savedContents.getCellNamesAndContents();
+
+		// turn xml saved cell's into cells for this Spreadhseet
 		for (String cell : savedCellContents.keySet())
 		{
 			try
@@ -112,35 +115,34 @@ public class Spreadsheet extends AbstractSpreadsheet
 	}
 
 	/**
-	 * Attempts to read in the Spreadsheet saved at filename. Upon successful
-	 * parsing, returns the handler that was used to read in the spreadsheet which
-	 * will contain a method for getting a HashMap of every cell and cell contents
-	 * of the file, and a method for getting the version of the spreadsheet.
-	 * 
-	 * If parsing is unsuccessful will throw SpreadsheetReadWriteException
-	 */
-	private SpreadsheetDocumentHandler parseSpreadsheetXML(String filename) throws SpreadsheetReadWriteException
-	{
-		try
-		{
-			SAXParserFactory parserFactory = SAXParserFactory.newInstance();
-			SAXParser parser = parserFactory.newSAXParser();
-
-			XMLReader reader = parser.getXMLReader();
-
-			SpreadsheetDocumentHandler handler = new SpreadsheetDocumentHandler();
-			reader.setContentHandler(handler);
-			reader.parse(new InputSource(new FileInputStream(filename)));
-
-			return handler;
-
-		}
-		catch (Exception e)
-		{
-			throw new SpreadsheetReadWriteException("Error reading file: " + filename);
-		}
-	}
-
+	 * @formatter:off
+	 * Writes the contents of this Spreadsheet to the named file using an XML format.
+	 *
+     * The XML elements should be structured as follows:
+     * 
+     * 
+     * <spreadsheet version="version information goes here">
+     * 
+     * <cell>
+     * <name>
+     * cell name goes here
+     * </name>
+     * <contents>
+     * cell contents goes here
+     * </contents>    
+     * </cell>
+     * 
+     * </spreadsheet>
+     * 
+     * There should be one cell element for each non-empty cell in the spreadsheet.  
+     * If the cell contains a string, it should be written as the contents.  
+     * If the cell contains a double d, d.ToString() should be written as the contents.  
+     * If the cell contains a Formula f, f.ToString() with "=" prepended should be written as the contents.
+     * 
+     * If there are any problems opening, writing, or closing the file, the method should throw a
+     * SpreadsheetReadWriteException with an explanatory message.
+     * @Formatter:on
+     */
 	@Override
 	public void save(String filename) throws SpreadsheetReadWriteException
 	{
@@ -208,6 +210,9 @@ public class Spreadsheet extends AbstractSpreadsheet
 			return "";
 	}
 
+	/**
+	 * Returns an iterator containing the names of all the non-empty cells in this Spreadsheet
+	 */
 	@Override
 	public Iterable<String> getNamesOfAllNonemptyCells()
 	{
@@ -219,6 +224,12 @@ public class Spreadsheet extends AbstractSpreadsheet
 		return copyOfNames;
 	}
 
+	/**
+	 * If name is null or invalid, throws an InvalidNameException.
+     *    
+     * Otherwise, returns the contents (as opposed to the value) of the named cell.  The return
+     * value should be either a string, a double, or a Formula.
+	 */
 	@Override
 	public Object getCellContents(String name) throws InvalidNameException
 	{
@@ -291,6 +302,16 @@ public class Spreadsheet extends AbstractSpreadsheet
 
 	}
 
+	/**
+	 * If name is null or invalid, throws an InvalidNameException.
+     *    
+     * Otherwise, the contents of the named cell becomes text.  The method returns a
+     * set consisting of name plus the names of all other cells whose value depends, 
+     * directly or indirectly, on the named cell.
+     *    
+     * For example, if name is A1, B1 contains A1*2, and C1 contains B1+A1, the
+     * set {A1, B1, C1} is returned.
+	 */
 	@Override
 	protected Set<String> setCellContents(String name, String text) throws InvalidNameException, CircularException
 	{
@@ -315,11 +336,25 @@ public class Spreadsheet extends AbstractSpreadsheet
 		return hashSetifyIterable(recalcCells);
 	}
 
+	
+	/**
+     * If name is null or invalid, throws an InvalidNameException.
+     * 
+     * Otherwise, if changing the contents of the named cell to be the formula would cause a 
+     * circular dependency, throws a CircularException.  (No change is made to the spreadsheet.)
+     * 
+     * Otherwise, the contents of the named cell becomes formula.  The method returns a
+     * Set consisting of name plus the names of all other cells whose value depends,
+     * directly or indirectly, on the named cell.
+     * 
+     * For example, if name is A1, B1 contains A1*2, and C1 contains B1+A1, the
+     * set {A1, B1, C1} is returned.       
+	 */
 	@Override
 	protected Set<String> setCellContents(String name, Formula formula) throws InvalidNameException, CircularException
 	{
 		if (formula == null)
-			throw new IllegalArgumentException("formula cannot be null");
+			throw new InvalidNameException("formula cannot be null");
 
 		cellNameValidator(name);
 		checkCircularDependency(name, formula);
@@ -335,7 +370,16 @@ public class Spreadsheet extends AbstractSpreadsheet
 		return hashSetifyIterable(recalcCells);
 
 	}
-
+	/*
+     * If name is null or invalid, throws an InvalidNameException.
+     * 
+     * Otherwise, the contents of the named cell becomes number.  The method returns a
+     * set consisting of name plus the names of all other cells whose value depends, 
+     * directly or indirectly, on the named cell.
+     * 
+     * For example, if name is A1, B1 contains A1*2, and C1 contains B1+A1, the
+     * set {A1, B1, C1} is returned.
+     * */
 	@Override
 	protected Set<String> setCellContents(String name, double number) throws InvalidNameException, CircularException
 	{
@@ -354,7 +398,6 @@ public class Spreadsheet extends AbstractSpreadsheet
 	}
 
 	/**
-	 *  
 	 * @formatter:off
 	 * If name is null, throws an IllegalArgumentException.
 	 * 
@@ -378,7 +421,7 @@ public class Spreadsheet extends AbstractSpreadsheet
 	protected Iterable<String> getDirectDependents(String name) throws InvalidNameException
 	{
 		if (name == null)
-			throw new InvalidNameException(name);
+			throw new IllegalArgumentException(name);
 
 		String normalName = safelyNormalize(name);
 		cellNameValidator(normalName);
@@ -524,6 +567,36 @@ public class Spreadsheet extends AbstractSpreadsheet
 		}
 		return set;
 
+	}
+
+	/**
+	 * Attempts to read in the Spreadsheet saved at filename. Upon successful
+	 * parsing, returns the handler that was used to read in the spreadsheet which
+	 * will contain a method for getting a HashMap of every cell and cell contents
+	 * of the file, and a method for getting the version of the spreadsheet.
+	 * 
+	 * If parsing is unsuccessful will throw SpreadsheetReadWriteException
+	 */
+	private SpreadsheetDocumentHandler parseSpreadsheetXML(String filename) throws SpreadsheetReadWriteException
+	{
+		try
+		{
+			SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+			SAXParser parser = parserFactory.newSAXParser();
+
+			XMLReader reader = parser.getXMLReader();
+
+			SpreadsheetDocumentHandler handler = new SpreadsheetDocumentHandler();
+			reader.setContentHandler(handler);
+			reader.parse(new InputSource(new FileInputStream(filename)));
+
+			return handler;
+
+		}
+		catch (Exception e)
+		{
+			throw new SpreadsheetReadWriteException("Error reading file: " + filename);
+		}
 	}
 
 	/**
