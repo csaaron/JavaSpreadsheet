@@ -353,7 +353,7 @@ public class Spreadsheet extends AbstractSpreadsheet
 	@Override
 	protected Set<String> setCellContents(String name, Formula formula) throws InvalidNameException, CircularException
 	{
-		if (formula == null)
+		if (name == null)
 			throw new InvalidNameException("formula cannot be null");
 
 		cellNameValidator(name);
