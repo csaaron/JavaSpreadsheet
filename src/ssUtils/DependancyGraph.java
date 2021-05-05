@@ -104,7 +104,8 @@ public class DependancyGraph
 	{
 		if (hasDependents(s))
 		{
-			return dependents.get(s);
+			// want copy of set to avoid changing underlying structure
+			return copyIterableToHashSet(dependents.get(s));
 		}
 		else
 		{
@@ -119,7 +120,8 @@ public class DependancyGraph
 	{
 		if (hasDependees(s))
 		{
-			return dependees.get(s);
+			// want copy of set to avoid changing underlying structure
+			return copyIterableToHashSet(dependees.get(s));
 		}
 		else
 		{
@@ -163,9 +165,8 @@ public class DependancyGraph
 	 */
 	public void replaceDependents(String s, Iterable<String> newDependents)
 	{
-
-		// must copy oldDependents to avoid modifying collection being iterated over
-		Iterable<String> oldDependents = hashSetifyIterable(getDependents(s));
+		// getDependents(s) returns a copy making this safe
+		Iterable<String> oldDependents = getDependents(s);
 		for (String r : oldDependents)
 		{
 			removeDependency(s, r);
@@ -184,8 +185,8 @@ public class DependancyGraph
 	public void replaceDependees(String s, Iterable<String> newDependees)
 	{
 
-		// must copy oldDependees to avoid modifying collection being iterated over
-		Iterable<String> oldDependees = hashSetifyIterable(getDependees(s));
+		// getDependents(s) returns a copy making this safe
+		Iterable<String> oldDependees = getDependees(s);
 		for (String r : oldDependees)
 		{
 			removeDependency(r, s);
@@ -197,11 +198,13 @@ public class DependancyGraph
 		}
 	}
 
+	/* Some helper methods below */
+	
 	/**
 	 * Returns a new HashSet<String> containing all Strings provided by the original
 	 * Iterable
 	 */
-	private static HashSet<String> hashSetifyIterable(Iterable<String> original)
+	private static HashSet<String> copyIterableToHashSet(Iterable<String> original)
 	{
 		HashSet<String> copy = new HashSet<String>();
 		for (String s : original)
@@ -211,6 +214,7 @@ public class DependancyGraph
 
 		return copy;
 	}
+	
 
 	/**
 	 * Takes two strings, a key and a value. If the key exists, in dict, adds the
