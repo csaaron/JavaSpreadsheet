@@ -83,7 +83,7 @@ public abstract class AbstractSpreadsheet
 		return getCellsToRecalculate(nameSet);
 	}
 	
-	private Iterable<String> visit(String start, String name, Set<String> visited, LinkedList<String> changed) throws CircularException, InvalidNameException
+	private void visit(String start, String name, Set<String> visited, LinkedList<String> changed) throws CircularException, InvalidNameException
 	{
 		visited.add(name);
 		for (String n : getDirectDependents(name))
@@ -97,7 +97,7 @@ public abstract class AbstractSpreadsheet
 				visit(start, n, visited, changed);
 			}
 		}
-		return changed;
+		changed.addFirst(name);
 	}
 	
 	
