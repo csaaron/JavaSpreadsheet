@@ -183,6 +183,58 @@ class SpreadsheetTest
 	}
 
 	@Test
+	void testComplexCircular()
+	{
+
+		Spreadsheet s = new Spreadsheet();
+
+		try
+		{
+			s.setCellContents("A1", new Formula("A2+A3"));
+			s.setCellContents("A3", new Formula("A4+A5"));
+			s.setCellContents("A5", new Formula("A6+A7"));
+		}
+		catch (InvalidNameException | CircularException e)
+		{
+			fail();
+		}
+
+		assertThrows(CircularException.class, () -> s.setCellContents("A7", new Formula("A1+A1")));
+	}
+
+	@Test
+	void testUndoCircular() 
+	{
+		Spreadsheet s = new Spreadsheet();
+
+		try
+		{
+			s.setCellContents("A1", new Formula("A2+A3"));
+			s.setCellContents("A2", 15);
+			s.setCellContents("A3", 30);
+			s.setCellContents("A2", new Formula("A3*A1"));
+		}
+		catch (InvalidNameException e)
+		{
+			fail();
+		}
+		catch (CircularException e)
+		{
+			try
+			{
+				assertEquals(15, (double)s.getCellContents("A2"));
+				return;
+			}
+			catch (InvalidNameException e1)
+			{
+				fail();
+			}
+		}
+		
+		fail(); //if we never threw exception
+	}
+
+	@Test
 	void testGetDirectDependents()
 	{
 		// taken from method description
@@ -250,7 +302,7 @@ class SpreadsheetTest
 		for (String s : iterable)
 		{
 			iterableSize++;
-			
+
 			if (!expectedSet.contains(s))
 				return false;
 		}
