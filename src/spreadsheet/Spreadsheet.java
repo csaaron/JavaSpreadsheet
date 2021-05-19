@@ -17,6 +17,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
+import spreadsheet.Cell.CellType;
 import ssUtils.IsValidFunctor;
 import ssUtils.Normalizer;
 import ssUtils.DependancyGraph;
@@ -524,7 +525,7 @@ public class Spreadsheet extends AbstractSpreadsheet
 		catch (CircularException e)
 		{
 			dependencies.replaceDependents(name, oldDependencies);
-			throw new CircularException(name);
+			throw e;
 		}
 	}
 
@@ -545,8 +546,15 @@ public class Spreadsheet extends AbstractSpreadsheet
 	 */
 	private void addCellToHashMap(String name, Cell cell)
 	{
-		emptyCell(name);
+		
+		if (cells.containsKey(name) && cells.get(name).getType() == CellType.FORMULA_TYPE)
+		{
+			dependencies.replaceDependents(name, new ArrayList<String>());
+		}
+		
 		cells.put(name, cell);
+		
+		
 	}
 
 	/**
