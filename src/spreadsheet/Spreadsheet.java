@@ -33,6 +33,12 @@ public class Spreadsheet extends AbstractSpreadsheet
 	// If a cell becomes empty, will be removed from the dictionary.
 	private HashMap<String, Cell> cells;
 
+	// Provides the default method for looking up cell values in this spreadsheet
+	private Lookup defaultLookup;
+
+	// A compiled Pattern object for matching cell names
+	private Pattern cellNamePattern;
+
 	/**
 	 * Creates a new spreadsheet. In a new spreadsheet, the contents of every cell
 	 * is the empty string. This constructor imposes no extra validity conditions,
@@ -56,6 +62,10 @@ public class Spreadsheet extends AbstractSpreadsheet
 
 		dependencies = new DependancyGraph();
 		cells = new HashMap<String, Cell>();
+
+		defaultLookup = new LookupCellValue();
+
+		cellNamePattern = Pattern.compile("^[a-zA-Z]+\\d+$");
 	}
 
 	/**
@@ -324,7 +334,6 @@ public class Spreadsheet extends AbstractSpreadsheet
 		{
 			emptyCell(name);
 			Iterable<String> recalcCells = getCellsToRecalculate(name);
-			// recalculateCells(recalcCells); TODO: Might need this, wasn't in old project
 			return hashSetifyIterable(recalcCells);
 		}
 
@@ -360,7 +369,7 @@ public class Spreadsheet extends AbstractSpreadsheet
 		cellNameValidator(name);
 		checkCircularDependency(name, formula);
 
-		Cell cell = new Cell(formula, new LookupCellValue()); // TODO: make instance variable
+		Cell cell = new Cell(formula, defaultLookup);
 		addCellToHashMap(name, cell);
 
 		setChanged(true);
@@ -436,9 +445,8 @@ public class Spreadsheet extends AbstractSpreadsheet
 	 */
 	private void recalculateCells(Iterable<String> recalcCells)
 	{
-		Lookup lookup = new LookupCellValue(); // TODO: Make instance variable for default lookup.
 		for (String cell : recalcCells)
-			cells.get(cell).recalculateCellValue(lookup);
+			cells.get(cell).recalculateCellValue(defaultLookup);
 	}
 
 	/**
@@ -485,8 +493,7 @@ public class Spreadsheet extends AbstractSpreadsheet
 		if (name == null)
 			return false;
 
-		String pattern = "^[a-zA-Z]+\\d+$"; // TODO: Turn pattern into global variable
-		return Pattern.matches(pattern, name) && getIsValid().isValid(name);
+		return cellNamePattern.matcher(name).find() && getIsValid().isValid(name);
 	}
 
 	/**
@@ -524,6 +531,7 @@ public class Spreadsheet extends AbstractSpreadsheet
 		}
 		catch (CircularException e)
 		{
+			// return graph to state prior to circular exception
 			dependencies.replaceDependents(name, oldDependencies);
 			throw e;
 		}
@@ -546,15 +554,14 @@ public class Spreadsheet extends AbstractSpreadsheet
 	 */
 	private void addCellToHashMap(String name, Cell cell)
 	{
-		
+
 		if (cells.containsKey(name) && cells.get(name).getType() == CellType.FORMULA_TYPE)
 		{
 			dependencies.replaceDependents(name, new ArrayList<String>());
 		}
-		
+
 		cells.put(name, cell);
-		
-		
+
 	}
 
 	/**
