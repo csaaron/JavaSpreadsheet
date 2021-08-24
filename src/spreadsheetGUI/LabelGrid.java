@@ -124,7 +124,7 @@ public class LabelGrid extends javax.swing.JPanel
      * Returns true if the zero-based column and row is in range, else returns
      * false
      */
-    private boolean inRange(int row, int col)
+    public boolean inRange(int row, int col)
     {
         if ((row >= 0 && row < rowsSize) && (col >= 0 && col < columnSize))
         {

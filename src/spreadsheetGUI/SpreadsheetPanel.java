@@ -45,7 +45,27 @@ public class SpreadsheetPanel extends javax.swing.JScrollPane implements MouseLi
         setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     }
     
-    private boolean setSelection(int row, int col)
+    public int getSelectionRow()
+    {
+        return grid.getSelectionRow();
+    }
+    
+    public int getSelectionColumn()
+    {
+        return grid.getSelectionColumn();
+    }
+    
+    public boolean setValue(int row, int col, String value)
+    {
+        return grid.setValue(row, col, value);
+    }
+    
+    public boolean inRange(int row, int col)
+    {
+        return grid.inRange(row, col);
+    }
+    
+    public boolean setSelection(int row, int col)
     {
         return grid.setSelection(row,col) && columnNames.setSelection(col) && rowNames.setSelection(row);
     }

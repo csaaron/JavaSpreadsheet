@@ -5,6 +5,8 @@
  */
 package spreadsheetGUI;
 
+import javax.swing.UIManager;
+
 /**
  *
  * @author aaron
@@ -182,7 +184,8 @@ public class SpreadsheetGUI extends javax.swing.JFrame
         {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels())
             {
-                if ("Nimbus".equals(info.getName()))
+                String systemLandF = UIManager.getSystemLookAndFeelClassName();
+                if (systemLandF.equals(info.getClassName()))
                 {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
