@@ -85,7 +85,8 @@ public class SpreadsheetController
     private String convertRowColToCellName(int row, int col)
     {
         int rowName = row + 1;
-        String colName = String.valueOf(col + (int) 'A');
+        String colName = Character.toString((char)(col + (int)'A'));
+        
         return colName + rowName;
     }
 
