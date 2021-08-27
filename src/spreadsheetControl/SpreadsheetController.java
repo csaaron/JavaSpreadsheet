@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 import spreadsheet.AbstractSpreadsheet;
 import spreadsheet.InvalidNameException;
 import spreadsheet.CircularException;
@@ -50,7 +51,7 @@ public class SpreadsheetController
 
     public void initController()
     {
-
+        
     }
 
     /**
@@ -310,6 +311,21 @@ public class SpreadsheetController
     private void save()
     {
         // TODO: complete method
+        
+        JFileChooser j = new JFileChooser();
+        int selection = j.showSaveDialog(null);
+        
+        if (selection == JFileChooser.APPROVE_OPTION)
+        {
+            try
+            {
+                sheet.save(j.getSelectedFile().getAbsolutePath());
+            }
+            catch (SpreadsheetReadWriteException ex)
+            {
+                window.showErrorMessageBox(ex.getMessage());
+            }
+        }
     }
     
     /**

@@ -5,6 +5,8 @@
  */
 package spreadsheetGUI;
 
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.JScrollPane;
@@ -13,7 +15,7 @@ import javax.swing.JScrollPane;
  *
  * @author aaron
  */
-public class SpreadsheetPanel extends javax.swing.JScrollPane implements MouseListener
+public class SpreadsheetPanel extends javax.swing.JScrollPane implements ItemListener
 {
 
     private static final int COLUMN_WIDTH = 80;
@@ -32,7 +34,8 @@ public class SpreadsheetPanel extends javax.swing.JScrollPane implements MouseLi
         
         initComponents();
         
-        this.getViewport().getView().addMouseListener(this);
+        
+        grid.addItemListener(this);
     }
 
     private void initComponents()
@@ -71,35 +74,13 @@ public class SpreadsheetPanel extends javax.swing.JScrollPane implements MouseLi
     }
 
     @Override
-    public void mouseClicked(MouseEvent e)
+    public void itemStateChanged(ItemEvent arg0)
     {
-        setSelection(grid.getSelectionRow(), grid.getSelectionColumn());
+        if (arg0.getStateChange() == ItemEvent.SELECTED)
+        {
+            columnNames.setSelection(getSelectionColumn());
+            rowNames.setSelection(getSelectionRow());
+        }
     }
-
-    @Override
-    public void mousePressed(MouseEvent e)
-    {
-        return;
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e)
-    {
-        return;
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e)
-    {
-        return;
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e)
-    {
-        return;
-    }
-    
-    
 
 }
