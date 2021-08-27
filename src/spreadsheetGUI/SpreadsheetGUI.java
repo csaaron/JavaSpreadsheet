@@ -6,12 +6,13 @@
 package spreadsheetGUI;
 
 import javax.swing.UIManager;
+import spreadsheetControl.SpreadsheetController;
 
 /**
  *
  * @author aaron
  */
-public class SpreadsheetGUI extends javax.swing.JFrame
+public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWindow
 {
 
     /**
@@ -46,10 +47,10 @@ public class SpreadsheetGUI extends javax.swing.JFrame
         newMenuItem = new javax.swing.JMenuItem();
         saveMenuItem = new javax.swing.JMenuItem();
         openMenuItem = new javax.swing.JMenuItem();
-        jMenuItem4 = new javax.swing.JMenuItem();
+        closeMenuItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
-        jMenuItem5 = new javax.swing.JMenuItem();
-        jMenuItem6 = new javax.swing.JMenuItem();
+        aboutMenuItem = new javax.swing.JMenuItem();
+        howToUseMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -57,25 +58,11 @@ public class SpreadsheetGUI extends javax.swing.JFrame
 
         currentCellTextField.setEditable(false);
         currentCellTextField.setColumns(5);
-        currentCellTextField.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                currentCellTextFieldActionPerformed(evt);
-            }
-        });
 
         valueLabel.setText("Value");
 
         valueTextField.setEditable(false);
         valueTextField.setColumns(15);
-        valueTextField.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                valueTextFieldActionPerformed(evt);
-            }
-        });
 
         contentsLabel.setText("Contents");
 
@@ -139,19 +126,19 @@ public class SpreadsheetGUI extends javax.swing.JFrame
         openMenuItem.setText("Open");
         fileMenu.add(openMenuItem);
 
-        jMenuItem4.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        jMenuItem4.setText("Close");
-        fileMenu.add(jMenuItem4);
+        closeMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        closeMenuItem.setText("Close");
+        fileMenu.add(closeMenuItem);
 
         windowMenuBar.add(fileMenu);
 
         helpMenu.setText("Help");
 
-        jMenuItem5.setText("About");
-        helpMenu.add(jMenuItem5);
+        aboutMenuItem.setText("About");
+        helpMenu.add(aboutMenuItem);
 
-        jMenuItem6.setText("How to use");
-        helpMenu.add(jMenuItem6);
+        howToUseMenuItem.setText("How to use");
+        helpMenu.add(howToUseMenuItem);
 
         windowMenuBar.add(helpMenu);
 
@@ -159,16 +146,6 @@ public class SpreadsheetGUI extends javax.swing.JFrame
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void valueTextFieldActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_valueTextFieldActionPerformed
-    {//GEN-HEADEREND:event_valueTextFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_valueTextFieldActionPerformed
-
-    private void currentCellTextFieldActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_currentCellTextFieldActionPerformed
-    {//GEN-HEADEREND:event_currentCellTextFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_currentCellTextFieldActionPerformed
 
     /**
      * @param args the command line arguments
@@ -215,12 +192,17 @@ public class SpreadsheetGUI extends javax.swing.JFrame
         {
             public void run()
             {
-                new SpreadsheetGUI().setVisible(true);
+                SpreadsheetGUI view = new SpreadsheetGUI();
+                ISpreadsheetWindow viewInterface = (ISpreadsheetWindow)view;
+                
+                view.setVisible(true);
             }
         });
     }
-
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem aboutMenuItem;
+    private javax.swing.JMenuItem closeMenuItem;
     private javax.swing.JButton contentsButton;
     private javax.swing.JLabel contentsLabel;
     private javax.swing.JTextField contentsTextField;
@@ -228,9 +210,7 @@ public class SpreadsheetGUI extends javax.swing.JFrame
     private javax.swing.JTextField currentCellTextField;
     private javax.swing.JMenu fileMenu;
     private javax.swing.JMenu helpMenu;
-    private javax.swing.JMenuItem jMenuItem4;
-    private javax.swing.JMenuItem jMenuItem5;
-    private javax.swing.JMenuItem jMenuItem6;
+    private javax.swing.JMenuItem howToUseMenuItem;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JMenuItem newMenuItem;
     private javax.swing.JMenuItem openMenuItem;
@@ -240,4 +220,114 @@ public class SpreadsheetGUI extends javax.swing.JFrame
     private javax.swing.JTextField valueTextField;
     private javax.swing.JMenuBar windowMenuBar;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public SpreadsheetPanel getSpreadsheetPanel()
+    {
+        return spreadsheetPanel;
+    }
+
+    @Override
+    public void setCurrentCellText(String text)
+    {
+        currentCellTextField.setText(text);
+    }
+
+    @Override
+    public void setValueBoxText(String text)
+    {
+        valueTextField.setText(text);
+    }
+
+    @Override
+    public String getContentsBoxText()
+    {
+        return contentsTextField.getText();
+    }
+
+    @Override
+    public void setContentsBoxText(String text)
+    {
+        contentsTextField.setText(text);
+    }
+
+    @Override
+    public String getWindowText()
+    {
+        return getTitle();
+    }
+
+    @Override
+    public void setWindowText(String text)
+    {
+        setTitle(text);
+    }
+
+    @Override
+    public void createNew()
+    {
+        // TODO: Implement method
+    }
+
+    @Override
+    public void showErrorMessageBox(String message)
+    {
+        javax.swing.JOptionPane.showMessageDialog(this, message, 
+                "Spreadsheet Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+    }
+
+    @Override
+    public boolean showOkayCancelMessageBox(String message, String caption)
+    {
+        // TODO: Implement method
+        return false;
+    }
+
+    @Override
+    public void setCellText(int row, int col, String text)
+    {
+        spreadsheetPanel.setValue(row, col, text);
+    }
+
+    @Override
+    public int getCellSelectionRow()
+    {
+        return spreadsheetPanel.getSelectionRow();
+    }
+
+    @Override
+    public int getCellSelectionColumn()
+    {
+        return spreadsheetPanel.getSelectionColumn();
+    }
+
+    @Override
+    public void closeWindow()
+    {
+        // TODO: Complete method
+    }
+
+    @Override
+    public void setDefaultAcceptButton()
+    {
+        // TODO: Complete method
+    }
+
+    @Override
+    public void setFocusToContentBox()
+    {
+        // TODO: complete method
+    }
+
+    @Override
+    public void addFormClosingAction()
+    {
+        // TODO: complete method
+    }
+
+    @Override
+    public void setCellSelectionToDefault()
+    {
+        spreadsheetPanel.setSelection(0, 0);
+    }
 }

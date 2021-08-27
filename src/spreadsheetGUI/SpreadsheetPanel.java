@@ -35,7 +35,7 @@ public class SpreadsheetPanel extends javax.swing.JScrollPane implements ItemSel
 
         initComponents();
 
-        grid.addItemListener(new SpreadsheetPanelSelectItemListener());
+        addItemListener(new SpreadsheetPanelSelectItemListener());
     }
 
     private void initComponents()

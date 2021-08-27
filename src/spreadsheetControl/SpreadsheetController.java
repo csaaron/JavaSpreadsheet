@@ -5,18 +5,21 @@
  */
 package spreadsheetControl;
 
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
-import spreadsheet.AbstractSpreadsheet;
+import spreadsheet.Spreadsheet;
 import spreadsheet.InvalidNameException;
 import spreadsheet.CircularException;
 import spreadsheet.SpreadsheetReadWriteException;
 import spreadsheetGUI.ISpreadsheetWindow;
 import spreadsheetGUI.SpreadsheetPanel;
+
 
 /**
  * Controller for the spreadsheet gui. Contains reference to view and model.
@@ -24,34 +27,41 @@ import spreadsheetGUI.SpreadsheetPanel;
 public class SpreadsheetController
 {
 
-    private AbstractSpreadsheet sheet; // reference to the model
+    private Spreadsheet sheet; // reference to the model
     private ISpreadsheetWindow window; // referrence to the view (gui)
     
     private CellValidator validator; // a precompiled default validator for the model
     private CellNormalizer normalizer; // a precompiled default normalizer for the model
 
-    public SpreadsheetController(AbstractSpreadsheet model, ISpreadsheetWindow view)
+    
+    
+    public SpreadsheetController(ISpreadsheetWindow view)
     {
-        sheet = model;
+        
         window = view;
 
         validator = new CellValidator();
         normalizer = new CellNormalizer();
+        String version = "ps6";
+        
+        sheet = new Spreadsheet(validator, normalizer, version);
+        
+        initView();
+        initController();
     }
 
-    public void initView()
+    private void initView()
     {
         // set the window name at the top of the form
         window.setWindowText("untitled.sprd");
 
-        window.getSpreadsheetPanel().setSelection(0, 0);
         updateCurrentCellBoxes();
 
     }
 
-    public void initController()
+    private void initController()
     {
-        
+        window.getSpreadsheetPanel().addItemListener(new SpreadsheetSelectedCellItemListener());
     }
 
     /**
@@ -262,7 +272,7 @@ public class SpreadsheetController
         try
         {
             // open the spreadsheet
-            AbstractSpreadsheet newSheet = new spreadsheet.Spreadsheet(fileLocation, validator, normalizer, "ps6");
+            Spreadsheet newSheet = new spreadsheet.Spreadsheet(fileLocation, validator, normalizer, "ps6");
             
             // Opening new spreadsheet did not throw exception
             sheet = newSheet;
@@ -358,6 +368,17 @@ public class SpreadsheetController
             }
             
         }
+    }
+    
+    private class SpreadsheetSelectedCellItemListener implements ItemListener
+    {
+
+        @Override
+        public void itemStateChanged(ItemEvent arg0)
+        {
+            updateCurrentCellBoxes();
+        }
+        
     }
 }   
 

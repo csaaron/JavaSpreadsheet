@@ -3,23 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package spreadsheetControl;
+package spreadsheetGUI;
 
-import ssUtils.Normalizer;
+import javax.swing.UIManager;
+import spreadsheetControl.SpreadsheetController;
 
 /**
  *
  * @author aaron
  */
-public class CellNormalizer implements Normalizer
+public class Program
 {
-
-    @Override
-    public String normalize(String s)
-    {
-        return s.toUpperCase();
-    }
-
-    
     
 }
