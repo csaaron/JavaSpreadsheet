@@ -5,6 +5,7 @@
  */
 package spreadsheetGUI;
 
+import java.awt.ItemSelectable;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
@@ -15,7 +16,7 @@ import javax.swing.JScrollPane;
  *
  * @author aaron
  */
-public class SpreadsheetPanel extends javax.swing.JScrollPane implements ItemListener
+public class SpreadsheetPanel extends javax.swing.JScrollPane implements ItemSelectable
 {
 
     private static final int COLUMN_WIDTH = 80;
@@ -31,11 +32,10 @@ public class SpreadsheetPanel extends javax.swing.JScrollPane implements ItemLis
         columnNames = new GridColumnLegend();
         rowNames = new GridRowLegend();
         grid = new LabelGrid();
-        
+
         initComponents();
-        
-        
-        grid.addItemListener(this);
+
+        grid.addItemListener(new SpreadsheetPanelSelectItemListener());
     }
 
     private void initComponents()
@@ -43,43 +43,65 @@ public class SpreadsheetPanel extends javax.swing.JScrollPane implements ItemLis
         setViewportView(grid);
         setColumnHeaderView(columnNames);
         setRowHeaderView(rowNames);
-        
+
         setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     }
-    
+
     public int getSelectionRow()
     {
         return grid.getSelectionRow();
     }
-    
+
     public int getSelectionColumn()
     {
         return grid.getSelectionColumn();
     }
-    
+
     public boolean setValue(int row, int col, String value)
     {
         return grid.setValue(row, col, value);
     }
-    
+
     public boolean inRange(int row, int col)
     {
         return grid.inRange(row, col);
     }
-    
+
     public boolean setSelection(int row, int col)
     {
-        return grid.setSelection(row,col) && columnNames.setSelection(col) && rowNames.setSelection(row);
+        return grid.setSelection(row, col) && columnNames.setSelection(col) && rowNames.setSelection(row);
     }
 
     @Override
-    public void itemStateChanged(ItemEvent arg0)
+    public Object[] getSelectedObjects()
     {
-        if (arg0.getStateChange() == ItemEvent.SELECTED)
+        return grid.getSelectedObjects();
+    }
+
+    @Override
+    public void addItemListener(ItemListener arg0)
+    {
+        grid.addItemListener(arg0);
+    }
+
+    @Override
+    public void removeItemListener(ItemListener arg0)
+    {
+        grid.removeItemListener(arg0);
+    }
+
+    private class SpreadsheetPanelSelectItemListener implements ItemListener
+    {
+
+        @Override
+        public void itemStateChanged(ItemEvent arg0)
         {
-            columnNames.setSelection(getSelectionColumn());
-            rowNames.setSelection(getSelectionRow());
+            if (arg0.getStateChange() == ItemEvent.SELECTED)
+            {
+                columnNames.setSelection(getSelectionColumn());
+                rowNames.setSelection(getSelectionRow());
+            }
         }
     }
 
