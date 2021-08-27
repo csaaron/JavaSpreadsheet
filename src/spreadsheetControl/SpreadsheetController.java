@@ -13,8 +13,10 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
-import spreadsheet.Spreadsheet;
+import spreadsheet.*;
 import spreadsheet.InvalidNameException;
+import spreadsheet.Spreadsheet;
+
 import spreadsheet.CircularException;
 import spreadsheet.SpreadsheetReadWriteException;
 import spreadsheetGUI.ISpreadsheetWindow;
