@@ -18,7 +18,7 @@ public class CellValidator implements ssUtils.IsValidFunctor
     
     public CellValidator()
     {
-        cellNamePattern = Pattern.compile("^[a-zA-Z]+\\d?$"); 
+        cellNamePattern = Pattern.compile("^[a-zA-Z]\\d\\d?$"); 
     }
     
     @Override
