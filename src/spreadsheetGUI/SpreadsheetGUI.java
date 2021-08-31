@@ -5,6 +5,7 @@
  */
 package spreadsheetGUI;
 
+import java.awt.event.ActionListener;
 import javax.swing.UIManager;
 
 
@@ -22,6 +23,7 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
     public SpreadsheetGUI()
     {
         initComponents();
+        
     }
 
     /**
@@ -280,4 +282,12 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
     {
         spreadsheetPanel.setSelection(0, 0);
     }
+
+    @Override
+    public void addActionListenerToEnterContentsButton(ActionListener l)
+    {
+        contentsButton.addActionListener(l);
+    }
+
+    
 }

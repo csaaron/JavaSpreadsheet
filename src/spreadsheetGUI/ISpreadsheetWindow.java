@@ -5,6 +5,8 @@
  */
 package spreadsheetGUI;
 
+import java.awt.event.ActionListener;
+
 public interface ISpreadsheetWindow
 {
 
@@ -99,5 +101,9 @@ public interface ISpreadsheetWindow
      * Sets the default cell as selection in the spreadsheet panel
      */
     public void setCellSelectionToDefault();
-
+    
+    /**
+     * Adds a listener to the enterContentsButton
+     */
+    public void addActionListenerToEnterContentsButton(ActionListener l);
 }

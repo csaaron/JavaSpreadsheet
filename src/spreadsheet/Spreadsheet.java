@@ -302,7 +302,7 @@ public class Spreadsheet extends AbstractSpreadsheet
 			return setCellContents(normalName, doubleContent);
 		}
 
-		if (content.length() > 0 && content.charAt(1) == '=')
+		if (content.length() > 0 && content.charAt(0) == '=')
 		{
 			String formulaContent = content.length() > 1 ? content.substring(1) : "";
 			Formula formula = new Formula(formulaContent, super.getNormalize(), super.getIsValid());

@@ -5,6 +5,8 @@
  */
 package spreadsheetControl;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.nio.file.Path;
@@ -22,7 +24,6 @@ import spreadsheet.SpreadsheetReadWriteException;
 import spreadsheetGUI.ISpreadsheetWindow;
 import spreadsheetGUI.SpreadsheetPanel;
 
-
 /**
  * Controller for the spreadsheet gui. Contains reference to view and model.
  */
@@ -31,23 +32,21 @@ public class SpreadsheetController
 
     private Spreadsheet sheet; // reference to the model
     private ISpreadsheetWindow window; // referrence to the view (gui)
-    
+
     private CellValidator validator; // a precompiled default validator for the model
     private CellNormalizer normalizer; // a precompiled default normalizer for the model
 
-    
-    
     public SpreadsheetController(ISpreadsheetWindow view)
     {
-        
+
         window = view;
 
         validator = new CellValidator();
         normalizer = new CellNormalizer();
         String version = "ps6";
-        
+
         sheet = new Spreadsheet(validator, normalizer, version);
-        
+
         initView();
         initController();
     }
@@ -64,6 +63,8 @@ public class SpreadsheetController
     private void initController()
     {
         window.getSpreadsheetPanel().addItemListener(new SpreadsheetSelectedCellItemListener());
+        window.addActionListenerToEnterContentsButton(new SpreadsheetAddContentsToCellActionListener());
+
     }
 
     /**
@@ -85,8 +86,8 @@ public class SpreadsheetController
     private String convertRowColToCellName(int row, int col)
     {
         int rowName = row + 1;
-        String colName = Character.toString((char)(col + (int)'A'));
-        
+        String colName = Character.toString((char) (col + (int) 'A'));
+
         return colName + rowName;
     }
 
@@ -161,13 +162,13 @@ public class SpreadsheetController
         {
             //set the contents text to the current contents of the cell
             Object contents = sheet.getCellContents(cellName);
-
+            
             if (contents instanceof String || contents instanceof Double)
             {
-                window.setValueBoxText(contents.toString());
+                window.setContentsBoxText(contents.toString());
             } else
             {
-                window.setValueBoxText("FormulaError");
+                window.setContentsBoxText("=" + contents.toString());
             }
         }
         catch (InvalidNameException ex)
@@ -179,7 +180,7 @@ public class SpreadsheetController
     /**
      * Gets the current text in the current cell contents box sets it to the
      * model's cell contents and updates the view cell value. If an error
-     * occurs, creates a message box with the message that an error occured.
+     * occurs, creates a message box with the message that an error occurred.
      */
     private void setCellContentsFromContentsBox()
     {
@@ -190,7 +191,7 @@ public class SpreadsheetController
 
         try
         {
-            Set<String> cellsToUpdate = sheet.setContentsOfCell(cellName, window.getContentsBoxText());
+            Set<String> cellsToUpdate = sheet.setContentsOfCell(cellName, window.getContentsBoxText().trim());
             setSpreadsheetPanelValues(cellsToUpdate);
             updateCurrentCellBoxes();
         }
@@ -221,7 +222,7 @@ public class SpreadsheetController
      * Takes a set of cell names, looks up their values then sets the
      * SpreadsheetPanel text for those cells to that value
      */
-    private void setSpreadsheetPanelValues(Iterable<String> cellsToUpdate) throws InvalidNameException
+    private void setSpreadsheetPanelValues(Iterable<String> cellsToUpdate) 
     {
         for (String cell : cellsToUpdate)
         {
@@ -233,27 +234,35 @@ public class SpreadsheetController
      * takes in a cell name, looks up its value and sets the value to the
      * corresponding cell in the view
      */
-    private void setSpreadsheetPanelValue(String cell) throws InvalidNameException
+    private void setSpreadsheetPanelValue(String cell)
     {
-        Object value = sheet.getCellValue(cell);
-        int row = convertCellNameToRow(cell);
-        int col = convertCellNameToColumn(cell);
+        Object value;
+        try
+        {
+            value = sheet.getCellValue(cell);
 
-        // if value is a string or double, set the cell text, else cell text 
-        // should be "FormulaError"
-        if (value instanceof String || value instanceof Double)
+            int row = convertCellNameToRow(cell);
+            int col = convertCellNameToColumn(cell);
+
+            // if value is a string or double, set the cell text, else cell text 
+            // should be "FormulaError"
+            if (value instanceof String || value instanceof Double)
+            {
+                window.setCellText(row, col, value.toString());
+            } else
+            {
+                window.setCellText(row, col, "FormulaError");
+            }
+        }
+        catch (InvalidNameException ex)
         {
-            window.setCellText(row, col, value.toString());
-        } 
-        else
-        {
-            window.setCellText(row, col, "FormulaError");
+            window.showErrorMessageBox(ex.getMessage());
         }
     }
-    
+
     /**
-     * Helper method for OpenSpreadsheetFromFile
-     * Empties the contents of the spreadsheet pane
+     * Helper method for OpenSpreadsheetFromFile Empties the contents of the
+     * spreadsheet pane
      */
     private void emptyAllCells(Iterable<String> cellsToEmpty)
     {
@@ -264,44 +273,44 @@ public class SpreadsheetController
             window.setCellText(row, col, "");
         }
     }
-    
+
     /**
-     * Empties the spreadsheet pane and sets its contents to the new spreadsheet model fileLocation
+     * Empties the spreadsheet pane and sets its contents to the new spreadsheet
+     * model fileLocation
      */
     private void openSpreadsheetFromFile(String fileLocation)
     {
-        
-        
+
         try
         {
             // open the spreadsheet
             Spreadsheet newSheet = new spreadsheet.Spreadsheet(fileLocation, validator, normalizer, "ps6");
-            
+
             // Opening new spreadsheet did not throw exception
             sheet = newSheet;
-            
+
             // empty the sheet
             emptyAllCells(sheet.getNamesOfAllNonemptyCells());
-        
+
             // window title is name of new file 
             String fileName = Paths.get(fileLocation).getFileName().toString();
             window.setWindowText(fileName);
-            
+
             // set contents of the spreadsheet pane
             Iterable<String> nonEmpty = sheet.getNamesOfAllNonemptyCells();
             setSpreadsheetPanelValues(nonEmpty);
-            
+
             // update the current window selection
             window.setCellSelectionToDefault();
             updateCurrentCellBoxes();
         }
-        catch (SpreadsheetReadWriteException | InvalidNameException ex)
+        catch (SpreadsheetReadWriteException ex)
         {
             window.showErrorMessageBox(ex.getMessage());
         }
-        
+
     }
-    
+
     /**
      * Opens the about file in the default text editor
      */
@@ -309,7 +318,7 @@ public class SpreadsheetController
     {
         // TODO: complete method
     }
-    
+
     /**
      * Opens the how to use file in the default text editor
      */
@@ -317,17 +326,17 @@ public class SpreadsheetController
     {
         // TODO: complete method
     }
-    
+
     /**
      * Opens a save file dialogue and saves the model to a file
      */
     private void save()
     {
         // TODO: complete method
-        
+
         JFileChooser j = new JFileChooser();
         int selection = j.showSaveDialog(null);
-        
+
         if (selection == JFileChooser.APPROVE_OPTION)
         {
             try
@@ -340,16 +349,16 @@ public class SpreadsheetController
             }
         }
     }
-    
+
     /**
-     * Opens a file dialogue box and opens the chosen file in this window.
-     * If information will be changed, prompts user to save.
+     * Opens a file dialogue box and opens the chosen file in this window. If
+     * information will be changed, prompts user to save.
      */
     private void open()
     {
         // TODO: complete method
     }
-    
+
     /**
      * Dialogue box that prompts the user to save current spreadsheet
      */
@@ -363,16 +372,16 @@ public class SpreadsheetController
             message.append("\n\nSave changes?");
             String caption = "Save Changes?";
             boolean save = window.showOkayCancelMessageBox(message.toString(), caption);
-            
+
             // if user clicks on save then save the changes
             if (save)
             {
                 save();
             }
-            
+
         }
     }
-    
+
     private class SpreadsheetSelectedCellItemListener implements ItemListener
     {
 
@@ -381,7 +390,18 @@ public class SpreadsheetController
         {
             updateCurrentCellBoxes();
         }
-        
-    }
-}   
 
+    }
+
+    private class SpreadsheetAddContentsToCellActionListener implements ActionListener
+    {
+
+        @Override
+        public void actionPerformed(ActionEvent arg0)
+        {
+            setCellContentsFromContentsBox();
+            updateCurrentCellBoxes();
+        }
+
+    }
+}
