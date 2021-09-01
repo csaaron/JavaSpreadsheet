@@ -23,6 +23,7 @@ import spreadsheet.CircularException;
 import spreadsheet.SpreadsheetReadWriteException;
 import spreadsheetGUI.ISpreadsheetWindow;
 import spreadsheetGUI.SpreadsheetPanel;
+import ssUtils.FormulaFormatException;
 
 /**
  * Controller for the spreadsheet gui. Contains reference to view and model.
@@ -53,10 +54,12 @@ public class SpreadsheetController
 
     private void initView()
     {
-        // set the window name at the top of the form
-        window.setWindowText("untitled.sprd");
+       
 
         updateCurrentCellBoxes();
+         // set the window name at the top of the form
+        window.setWindowText("untitled.sprd");
+        window.setFocusToContentBox();
 
     }
 
@@ -199,7 +202,7 @@ public class SpreadsheetController
         {
             window.showErrorMessageBox("Circular dependency detected");
         }
-        catch (InvalidNameException e)
+        catch (InvalidNameException | FormulaFormatException e)
         {
             window.showErrorMessageBox(e.getMessage());
         }

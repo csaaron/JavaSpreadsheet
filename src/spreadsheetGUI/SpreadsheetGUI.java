@@ -268,7 +268,7 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
     @Override
     public void setFocusToContentBox()
     {
-        // TODO: complete method
+        contentsTextField.requestFocus();
     }
 
     @Override
