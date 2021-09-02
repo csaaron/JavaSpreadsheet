@@ -54,9 +54,6 @@ public class SpreadsheetController
 
     private void initView()
     {
-       
-
-        
         
          // set the window name at the top of the form
         window.setFocusToContentBox();

@@ -5,6 +5,7 @@
  */
 package spreadsheetGUI;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.ItemSelectable;
@@ -109,6 +110,7 @@ public class LabelGrid extends javax.swing.JPanel implements ItemSelectable
             for (int column = 0; column < columnSize; column++)
             {
                 GridLabel label = new GridLabel(row, column);
+                label.setForeground(Color.BLACK);
                 label.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
                 // label.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -279,7 +281,7 @@ public class LabelGrid extends javax.swing.JPanel implements ItemSelectable
             this.column = column;
             addMouseListener(this);
             addMouseListener(new RedispatchMouseListener());
-
+            
         }
 
         public int getRow()
