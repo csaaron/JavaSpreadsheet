@@ -70,7 +70,7 @@ public class SpreadsheetController
     {
         window.getSpreadsheetPanel().addItemListener(new SpreadsheetSelectedCellItemListener());
         window.addActionListenerToEnterContentsButton(new SpreadsheetAddContentsToCellActionListener());
-        
+        window.addActionListenerToContentsBox(new SpreadsheetAddContentsToCellActionListener());
 
     }
 

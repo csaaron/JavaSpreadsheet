@@ -85,7 +85,7 @@ public interface ISpreadsheetWindow
     /**
      * Sets the default accept button as contentsButton
      */
-    public void setDefaultAcceptButton();
+    public void addActionListenerToContentsBox(ActionListener l);
 
     /**
      * Sets the focus to the contents text box

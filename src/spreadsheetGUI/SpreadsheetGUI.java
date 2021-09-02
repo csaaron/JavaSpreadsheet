@@ -260,9 +260,9 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
     }
 
     @Override
-    public void setDefaultAcceptButton()
+    public void addActionListenerToContentsBox(ActionListener l)
     {
-        // TODO: Complete method
+        contentsTextField.addActionListener(l);
     }
 
     @Override
