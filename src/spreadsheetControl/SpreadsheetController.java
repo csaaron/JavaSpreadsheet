@@ -56,17 +56,21 @@ public class SpreadsheetController
     {
        
 
-        updateCurrentCellBoxes();
+        
+        
          // set the window name at the top of the form
-        window.setWindowText("untitled.sprd");
         window.setFocusToContentBox();
-
+        window.setWindowText("untitled.sprd");
+        window.getSpreadsheetPanel().setSelection(0, 0);
+        
+        updateCurrentCellBoxes();
     }
 
     private void initController()
     {
         window.getSpreadsheetPanel().addItemListener(new SpreadsheetSelectedCellItemListener());
         window.addActionListenerToEnterContentsButton(new SpreadsheetAddContentsToCellActionListener());
+        
 
     }
 

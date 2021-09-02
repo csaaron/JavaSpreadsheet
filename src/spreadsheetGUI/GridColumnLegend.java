@@ -16,6 +16,7 @@ import javax.swing.SwingConstants;
  */
 public class GridColumnLegend extends javax.swing.JPanel
 {
+
     private static final int COLUMN_WIDTH = 80;
     private static final int ROW_NUMBER_WIDTH = 20;
 
@@ -23,69 +24,67 @@ public class GridColumnLegend extends javax.swing.JPanel
     private int size;
     private int labelWidth;
     private int labelHeight;
-    
+
     private int selection;
 
     /**
-     * Creates column legends for a ScrollableSpreadsheetPanel using the
-     * default legends and default label width and height
-     * 
+     * Creates column legends for a ScrollableSpreadsheetPanel using the default
+     * legends and default label width and height
+     *
      * Default legend contains 26 legends labeled A - Z
      */
     public GridColumnLegend()
     {
         super();
-        
+
         JLabel example = new JLabel("example");
-        
-        size = (int) 'Z'-'A'+ 1;
+
+        size = (int) 'Z' - 'A' + 1;
         labels = new JLabel[size];
         labelWidth = COLUMN_WIDTH;
         labelHeight = example.getPreferredSize().height;
         selection = 0;
-        
-        
+
         String[] legends = new String[size];
-        
-        for (int i = 0; i + 'A' < 'Z' +1; i++)
+
+        for (int i = 0; i + 'A' < 'Z' + 1; i++)
         {
-            legends[i] = String.valueOf((char)(i + 'A'));
+            legends[i] = String.valueOf((char) (i + 'A'));
         }
-        
+
         initComponents(legends);
-        
-        setSelection(selection);
+
+        // setSelection(selection);
     }
 
     /**
-     * Creates column legends for a ScrollableSpreadsheetPanel using the
-     * default width and height and using legends for column headers
+     * Creates column legends for a ScrollableSpreadsheetPanel using the default
+     * width and height and using legends for column headers
      */
     public GridColumnLegend(String[] legends)
     {
         super();
-        
+
         JLabel example = new JLabel("example");
-        
+
         size = legends.length;
         labels = new JLabel[size];
         labelWidth = COLUMN_WIDTH;
         labelHeight = example.getPreferredSize().height;
         selection = 0;
-        
+
         initComponents(legends);
-        
-        setSelection(selection);
-        
+
+        // setSelection(selection);
     }
 
     /**
-     * Creates column legends for a ScrollableSpreadsheetPanel using the
-     * default width and height and using legends for column headers
+     * Creates column legends for a ScrollableSpreadsheetPanel using the default
+     * width and height and using legends for column headers
      */
     public GridColumnLegend(ArrayList<String> legends)
     {
-        this((String[])legends.toArray());
+        this((String[]) legends.toArray());
     }
 
     /**
@@ -95,16 +94,16 @@ public class GridColumnLegend extends javax.swing.JPanel
     public GridColumnLegend(String[] legends, int labelWidth, int labelHeight)
     {
         super();
-        
+
         size = legends.length;
         labels = new JLabel[size];
         this.labelWidth = labelWidth;
         this.labelHeight = labelHeight;
         selection = 0;
-        
+
         initComponents(legends);
-        
-        setSelection(selection);
+
+        // setSelection(selection);
     }
 
     /**
@@ -113,11 +112,12 @@ public class GridColumnLegend extends javax.swing.JPanel
      */
     public GridColumnLegend(ArrayList<String> legends, int labelWidth, int labelHeight)
     {
-        this((String[])legends.toArray(), labelWidth, labelHeight);
+        this((String[]) legends.toArray(), labelWidth, labelHeight);
     }
 
     /**
-     * Set this panel's layout as an absolute layout and initialize and place all components  
+     * Set this panel's layout as an absolute layout and initialize and place
+     * all components
      */
     private void initComponents(String[] legends)
     {
@@ -131,13 +131,13 @@ public class GridColumnLegend extends javax.swing.JPanel
     }
 
     /**
-     * Create and place the labels for this panel  
+     * Create and place the labels for this panel
      */
     private void createLabels(String[] legends)
     {
         int locationX = 0;
         int locationY = 0;
-        
+
         // create column name row
         for (int i = 0; i < legends.length; i++)
         {
@@ -153,43 +153,51 @@ public class GridColumnLegend extends javax.swing.JPanel
             locationX += labelWidth;
         }
     }
-    
-     public boolean inRange(int column)
+
+    public boolean inRange(int column)
     {
         if (column >= 0 && column < size)
         {
             return true;
         }
-        
+
         return false;
     }
-    
+
     public boolean setSelection(int column)
     {
         if (!inRange(column))
         {
             return false;
         }
-        
+
         //unset old selection by setting default border
         labels[selection].setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        toggleBold(selection);
-        
+        toggleBold(selection, false);
+
         //set new selection
         //thick border
         labels[column].setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 3));
-        toggleBold(column);
+        toggleBold(column, true);
 
         //update selected
         selection = column;
-        
+
         return true;
     }
-    
-    private void toggleBold(int column)
+
+    private void toggleBold(int column, boolean activate)
     {
         Font font = labels[column].getFont();
-        labels[column].setFont(font.deriveFont(font.getStyle() ^ Font.BOLD));
+        
+        if (activate)
+        {
+            labels[column].setFont(font.deriveFont(font.getStyle() | Font.BOLD));
+        }
+        else
+        {
+            labels[column].setFont(font.deriveFont(font.getStyle() & ~Font.BOLD));
+        }
     }
 
 }
