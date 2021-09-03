@@ -6,6 +6,7 @@
 package spreadsheetGUI;
 
 import java.awt.event.ActionListener;
+import java.awt.event.WindowListener;
 import java.io.FileFilter;
 import javax.swing.JFileChooser;
 
@@ -48,11 +49,6 @@ public interface ISpreadsheetWindow
     public void setWindowText(String text);
 
     /**
-     * Creates a new window containing an empty spreadsheet
-     */
-    public void createNew();
-
-    /**
      * Shows an error message box corresponding message
      */
     public void showErrorMessageBox(String message);
@@ -61,7 +57,7 @@ public interface ISpreadsheetWindow
      * Shows a message box which can be canceled with a corresponding message
      * and caption
      */
-    public boolean showOkayCancelMessageBox(String message, String caption);
+    public int showOkayCancelMessageBox(String message, String caption);
 
     /**
      * Sets the cell in the SpreadsheetPanel located at row, col to the String
@@ -97,7 +93,7 @@ public interface ISpreadsheetWindow
     /**
      * Allows the controller to add an action to the FormClosing event
      */
-    public void addFormClosingAction();
+    public void addFormClosingAction(WindowListener l);
 
     /**
      * Sets the default cell as selection in the spreadsheet panel
@@ -125,14 +121,19 @@ public interface ISpreadsheetWindow
     public void addActionListenerToOpenMenuItem(ActionListener l);
     
     /**
-     * Adds a listener to the Open menu item
+     * Adds a listener to the Save menu item
      */
     public void addActionListenerToSaveMenuItem(ActionListener l);
     
      /**
-     * Adds a listener to the Open menu item
+     * Adds a listener to the New menu item
      */
     public void addActionListenerToNewMenuItem(ActionListener l);
+    
+    /**
+     * Adds a listener to the Close menu item l 
+     */
+    public void addActionListenerToCloseMenuItem(ActionListener l);
     
     /**
      * Returns the file chooser used by this window. 

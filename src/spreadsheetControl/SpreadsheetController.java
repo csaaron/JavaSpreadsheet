@@ -9,8 +9,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.nio.file.Paths;
 import java.util.Set;
+import javax.swing.JOptionPane;
 import spreadsheet.InvalidNameException;
 import spreadsheet.Spreadsheet;
 
@@ -69,6 +72,8 @@ public class SpreadsheetController
         window.addActionListenerToOpenMenuItem(new SpreadsheetOpenActionListener());
         window.addActionListenerToSaveMenuItem(new SpreadsheetSaveActionListener());
         window.addActionListenerToNewMenuItem(new SpreadsheetNewActionListener());
+        window.addFormClosingAction(new SpreadsheetCloseWindowListener());
+        window.addActionListenerToCloseMenuItem(new SpreadsheetCloseActionListener());
     }
 
     /**
@@ -98,7 +103,7 @@ public class SpreadsheetController
     /**
      * Creates a new sheet
      */
-    private void OpenNewSheet()
+    private void openNewSheet()
     {
 
         // empty the sheet
@@ -375,26 +380,53 @@ public class SpreadsheetController
     }
 
     /**
-     * Dialogue box that prompts the user to save current spreadsheet
+     * Shows dialogue box that prompts user to save any unsaved changes
+     *
+     * Returns false if no further action should be made(cancel), else returns
+     * true
      */
-    private void modifiedSpreadsheetDialogueBox()
+    private boolean modifiedSpreadsheetDialogueBox()
     {
-        if (sheet.getChanged())
-        {
-            // prompt to save
-            StringBuilder message = new StringBuilder();
-            message.append("Unsaved changes detected in current spreadsheet " + window.getWindowText());
-            message.append("\n\nSave changes?");
-            String caption = "Save Changes?";
-            boolean save = window.showOkayCancelMessageBox(message.toString(), caption);
 
-            // if user clicks on save then save the changes
-            if (save)
+        // prompt to save
+        StringBuilder message = new StringBuilder();
+        message.append("Unsaved changes detected in current spreadsheet " + window.getWindowText());
+        message.append("\n\nSave changes?");
+        String caption = "Save Changes?";
+        int save = window.showOkayCancelMessageBox(message.toString(), caption);
+
+        // cancel selected, do nothing and return false
+        if (save == JOptionPane.CANCEL_OPTION)
+        {
+            return false;
+        }
+
+        // yes selected, show file choser, save file and return true.
+        // if save operation canceled, return false 
+        if (save == JOptionPane.YES_OPTION)
+        {
+            String file = window.showSaveFileDialogue();
+            if (file != null && !file.trim().equals(""))
             {
-                //save();
+                if (save(file))
+                {
+                    setWindowText(getFileNameFromPath(file), false);
+                    return true;
+                }
             }
 
+            return false;
+
         }
+
+        // user does not wish to save and does not want to cancel action, do nothing and return true
+        if (save == JOptionPane.NO_OPTION)
+        {
+            return true;
+        }
+        
+        return false;
+
     }
 
     private String getFileNameFromPath(String file)
@@ -452,7 +484,11 @@ public class SpreadsheetController
         @Override
         public void actionPerformed(ActionEvent arg0)
         {
-            open();
+            if (!sheet.getChanged() || modifiedSpreadsheetDialogueBox())
+            {
+                open();
+            }
+
         }
 
     }
@@ -473,16 +509,45 @@ public class SpreadsheetController
             }
         }
     }
-    
+
     private class SpreadsheetNewActionListener implements ActionListener
     {
 
         @Override
         public void actionPerformed(ActionEvent arg0)
         {
-            OpenNewSheet();
+            if (!sheet.getChanged()  || modifiedSpreadsheetDialogueBox())
+            {
+                openNewSheet();
+            }
         }
+
+    }
+    
+    private class SpreadsheetCloseActionListener implements ActionListener
+    {
         
+        @Override
+        public void actionPerformed(ActionEvent arg0)
+        {
+            if (!sheet.getChanged() || modifiedSpreadsheetDialogueBox())
+            {
+                window.closeWindow();
+            }
+        }
+    }
+    
+    private class SpreadsheetCloseWindowListener extends WindowAdapter
+    {
+        @Override
+        public void windowClosing(WindowEvent e)
+        {
+            if (!sheet.getChanged() || modifiedSpreadsheetDialogueBox())
+            {
+                window.closeWindow();
+            }
+            
+        }
     }
 
 }

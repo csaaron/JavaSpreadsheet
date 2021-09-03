@@ -6,7 +6,9 @@
 package spreadsheetGUI;
 
 import java.awt.event.ActionListener;
+import java.awt.event.WindowListener;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
 /**
@@ -56,7 +58,7 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
         aboutMenuItem = new javax.swing.JMenuItem();
         howToUseMenuItem = new javax.swing.JMenuItem();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
 
         currentCellLabel.setText("Current Cell");
 
@@ -218,23 +220,17 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
     }
 
     @Override
-    public void createNew()
-    {
-        // TODO: Implement method
-    }
-
-    @Override
     public void showErrorMessageBox(String message)
     {
-        javax.swing.JOptionPane.showMessageDialog(this, message,
+        JOptionPane.showMessageDialog(this, message,
                 "Spreadsheet Error", javax.swing.JOptionPane.ERROR_MESSAGE);
     }
 
     @Override
-    public boolean showOkayCancelMessageBox(String message, String caption)
+    public int showOkayCancelMessageBox(String message, String caption)
     {
-        // TODO: Implement method
-        return false;
+        return JOptionPane.showConfirmDialog(this, message, caption, 
+                JOptionPane.YES_NO_CANCEL_OPTION);
     }
 
     @Override
@@ -258,7 +254,8 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
     @Override
     public void closeWindow()
     {
-        // TODO: Complete method
+        this.dispose();
+        System.exit(0);
     }
 
     @Override
@@ -274,9 +271,9 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
     }
 
     @Override
-    public void addFormClosingAction()
+    public void addFormClosingAction(WindowListener l)
     {
-        // TODO: complete method
+        this.addWindowListener(l);
     }
 
     @Override
@@ -295,12 +292,11 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
     public String showOpenFileDialogue()
     {
         int returnVal = fileChooser.showOpenDialog(this);
-        
+
         if (returnVal == JFileChooser.APPROVE_OPTION)
         {
             return fileChooser.getSelectedFile().toString();
-        } 
-        else
+        } else
         {
             return "";
         }
@@ -314,8 +310,7 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
         if (returnVal == JFileChooser.APPROVE_OPTION)
         {
             return fileChooser.getSelectedFile().toString();
-        } 
-        else
+        } else
         {
             return "";
         }
@@ -332,11 +327,17 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
     {
         saveMenuItem.addActionListener(l);
     }
-    
+
     @Override
     public void addActionListenerToNewMenuItem(ActionListener l)
     {
         newMenuItem.addActionListener(l);
+    }
+    
+    @Override
+    public void addActionListenerToCloseMenuItem(ActionListener l)
+    {
+        closeMenuItem.addActionListener(l);
     }
 
     @Override
