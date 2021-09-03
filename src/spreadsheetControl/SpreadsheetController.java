@@ -9,13 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JFileChooser;
-import spreadsheet.*;
 import spreadsheet.InvalidNameException;
 import spreadsheet.Spreadsheet;
 
@@ -36,6 +31,8 @@ public class SpreadsheetController
 
     private CellValidator validator; // a precompiled default validator for the model
     private CellNormalizer normalizer; // a precompiled default normalizer for the model
+    
+    private String file;
 
     public SpreadsheetController(ISpreadsheetWindow view)
     {
@@ -45,22 +42,22 @@ public class SpreadsheetController
         validator = new CellValidator();
         normalizer = new CellNormalizer();
         String version = "ps6";
-
+        
         sheet = new Spreadsheet(validator, normalizer, version);
-
+        String windowText = "";
         initView();
         initController();
     }
 
     private void initView()
     {
-        
-         // set the window name at the top of the form
+
+        // set the window name at the top of the form
         window.setFocusToContentBox();
-        window.setWindowText("untitled.sprd");
+        setWindowText("untitled.sprd", true);
         window.getSpreadsheetPanel().setSelection(0, 0);
         window.getFileChooser().setFileFilter(new SpreadsheetFileFilter());
-        
+
         updateCurrentCellBoxes();
     }
 
@@ -69,7 +66,8 @@ public class SpreadsheetController
         window.getSpreadsheetPanel().addItemListener(new SpreadsheetSelectedCellItemListener());
         window.addActionListenerToEnterContentsButton(new SpreadsheetAddContentsToCellActionListener());
         window.addActionListenerToContentsBox(new SpreadsheetAddContentsToCellActionListener());
-        window.addActionListenerToOpenMenuItem(new SpreadsheetOpenSpreadsheetActionListener());
+        window.addActionListenerToOpenMenuItem(new SpreadsheetOpenActionListener());
+        window.addActionListenerToSaveMenuItem(new SpreadsheetSaveActionListener());
     }
 
     /**
@@ -167,7 +165,7 @@ public class SpreadsheetController
         {
             //set the contents text to the current contents of the cell
             Object contents = sheet.getCellContents(cellName);
-            
+
             if (contents instanceof String || contents instanceof Double)
             {
                 window.setContentsBoxText(contents.toString());
@@ -227,7 +225,7 @@ public class SpreadsheetController
      * Takes a set of cell names, looks up their values then sets the
      * SpreadsheetPanel text for those cells to that value
      */
-    private void setSpreadsheetPanelValues(Iterable<String> cellsToUpdate) 
+    private void setSpreadsheetPanelValues(Iterable<String> cellsToUpdate)
     {
         for (String cell : cellsToUpdate)
         {
@@ -334,26 +332,25 @@ public class SpreadsheetController
     }
 
     /**
-     * Opens a save file dialogue and saves the model to a file
+     * Saves sheet to file
      */
-    private void save()
+    private boolean save(String fileName)
     {
-        // TODO: complete method
-
-        JFileChooser j = new JFileChooser();
-        int selection = j.showSaveDialog(null);
-
-        if (selection == JFileChooser.APPROVE_OPTION)
+        if (fileName != null && !fileName.equals(""))
         {
             try
             {
-                sheet.save(j.getSelectedFile().getAbsolutePath());
+                sheet.save(fileName);
+                return true;
             }
             catch (SpreadsheetReadWriteException ex)
             {
                 window.showErrorMessageBox(ex.getMessage());
+                return false;
             }
         }
+        
+        return false;
     }
 
     /**
@@ -363,8 +360,7 @@ public class SpreadsheetController
     private void open()
     {
         window.showOpenFileDialogue();
-        
-        
+
     }
 
     /**
@@ -384,11 +380,38 @@ public class SpreadsheetController
             // if user clicks on save then save the changes
             if (save)
             {
-                save();
+                //save();
             }
 
         }
     }
+
+    private String getFileNameFromPath(String file)
+    {
+        if (file != null && !file.trim().equals(""))
+        {
+            int fileNamePosition = file.lastIndexOf('/');
+
+            if (fileNamePosition > 0 && fileNamePosition < file.length() - 1)
+            {
+                return file.substring(fileNamePosition +1);
+            }
+            else
+            {
+                return file;
+            }
+        }
+        
+        return file;
+    }
+    
+    private void setWindowText(String fileName, boolean changed)
+    {
+        String text = changed? fileName + " | Unsaved" : fileName + " | Saved";
+        file = fileName;
+        window.setWindowText(text);
+    }
+    
 
     private class SpreadsheetSelectedCellItemListener implements ItemListener
     {
@@ -408,12 +431,13 @@ public class SpreadsheetController
         public void actionPerformed(ActionEvent arg0)
         {
             setCellContentsFromContentsBox();
+            setWindowText(file, sheet.getChanged());
             updateCurrentCellBoxes();
         }
 
     }
-    
-    private class SpreadsheetOpenSpreadsheetActionListener implements ActionListener
+
+    private class SpreadsheetOpenActionListener implements ActionListener
     {
 
         @Override
@@ -421,6 +445,25 @@ public class SpreadsheetController
         {
             open();
         }
-        
+
     }
+
+    private class SpreadsheetSaveActionListener implements ActionListener
+    {
+
+        @Override
+        public void actionPerformed(ActionEvent arg0)
+        {
+            String file = window.showSaveFileDialogue();
+            if (file != null && !file.trim().equals(""))
+            {
+                if (save(file))
+                {
+                    setWindowText(getFileNameFromPath(file), false);
+                }
+            }
+        }
+
+    }
+
 }

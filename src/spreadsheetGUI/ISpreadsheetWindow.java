@@ -125,6 +125,11 @@ public interface ISpreadsheetWindow
     public void addActionListenerToOpenMenuItem(ActionListener l);
     
     /**
+     * Adds a listener to the Open menu item
+     */
+    public void addActionListenerToSaveMenuItem(ActionListener l);
+    
+    /**
      * Returns the file chooser used by this window. 
      * 
      * Allows controller to control settings offered by file chooser

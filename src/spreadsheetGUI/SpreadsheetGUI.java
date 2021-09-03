@@ -306,9 +306,11 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
     @Override
     public String showSaveFileDialogue()
     {
-        
-        
         int returnVal = fileChooser.showSaveDialog(this);
+        
+        if (returnVal == JFileChooser.APPROVE_OPTION)
+            return fileChooser.getSelectedFile().toString();
+        
         return "";
     }
 
@@ -316,6 +318,12 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
     public void addActionListenerToOpenMenuItem(ActionListener l)
     {
         openMenuItem.addActionListener(l);
+    }
+    
+    @Override
+    public void addActionListenerToSaveMenuItem(ActionListener l)
+    {
+        saveMenuItem.addActionListener(l);
     }
 
     @Override
