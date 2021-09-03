@@ -6,6 +6,8 @@
 package spreadsheetGUI;
 
 import java.awt.event.ActionListener;
+import java.io.FileFilter;
+import javax.swing.JFileChooser;
 
 public interface ISpreadsheetWindow
 {
@@ -106,4 +108,27 @@ public interface ISpreadsheetWindow
      * Adds a listener to the enterContentsButton
      */
     public void addActionListenerToEnterContentsButton(ActionListener l);
+    
+    /**
+     * Shows an open file dialogue box and returns the file selection
+     */
+    public String showOpenFileDialogue();
+    
+    /**
+     * Shows an close file dialogue box and returns the file selection
+     */
+    public String showSaveFileDialogue();
+    
+    /**
+     * Adds a listener to the Open menu item
+     */
+    public void addActionListenerToOpenMenuItem(ActionListener l);
+    
+    /**
+     * Returns the file chooser used by this window. 
+     * 
+     * Allows controller to control settings offered by file chooser
+     */
+    public JFileChooser getFileChooser();
+    
 }

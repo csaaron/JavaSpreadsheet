@@ -59,6 +59,7 @@ public class SpreadsheetController
         window.setFocusToContentBox();
         window.setWindowText("untitled.sprd");
         window.getSpreadsheetPanel().setSelection(0, 0);
+        window.getFileChooser().setFileFilter(new SpreadsheetFileFilter());
         
         updateCurrentCellBoxes();
     }
@@ -68,7 +69,7 @@ public class SpreadsheetController
         window.getSpreadsheetPanel().addItemListener(new SpreadsheetSelectedCellItemListener());
         window.addActionListenerToEnterContentsButton(new SpreadsheetAddContentsToCellActionListener());
         window.addActionListenerToContentsBox(new SpreadsheetAddContentsToCellActionListener());
-
+        window.addActionListenerToOpenMenuItem(new SpreadsheetOpenSpreadsheetActionListener());
     }
 
     /**
@@ -291,10 +292,11 @@ public class SpreadsheetController
             Spreadsheet newSheet = new spreadsheet.Spreadsheet(fileLocation, validator, normalizer, "ps6");
 
             // Opening new spreadsheet did not throw exception
+            Spreadsheet oldSheet = sheet;
             sheet = newSheet;
 
             // empty the sheet
-            emptyAllCells(sheet.getNamesOfAllNonemptyCells());
+            emptyAllCells(oldSheet.getNamesOfAllNonemptyCells());
 
             // window title is name of new file 
             String fileName = Paths.get(fileLocation).getFileName().toString();
@@ -360,7 +362,9 @@ public class SpreadsheetController
      */
     private void open()
     {
-        // TODO: complete method
+        window.showOpenFileDialogue();
+        
+        
     }
 
     /**
@@ -407,5 +411,16 @@ public class SpreadsheetController
             updateCurrentCellBoxes();
         }
 
+    }
+    
+    private class SpreadsheetOpenSpreadsheetActionListener implements ActionListener
+    {
+
+        @Override
+        public void actionPerformed(ActionEvent arg0)
+        {
+            open();
+        }
+        
     }
 }

@@ -6,6 +6,7 @@
 package spreadsheetGUI;
 
 import java.awt.event.ActionListener;
+import javax.swing.JFileChooser;
 import javax.swing.UIManager;
 
 
@@ -23,6 +24,8 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
     public SpreadsheetGUI()
     {
         initComponents();
+        
+        fileChooser = new JFileChooser();
         
     }
 
@@ -173,6 +176,8 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
     private javax.swing.JMenuBar windowMenuBar;
     // End of variables declaration//GEN-END:variables
 
+    private JFileChooser fileChooser;
+    
     @Override
     public SpreadsheetPanel getSpreadsheetPanel()
     {
@@ -287,6 +292,36 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
     public void addActionListenerToEnterContentsButton(ActionListener l)
     {
         contentsButton.addActionListener(l);
+    }
+
+    @Override
+    public String showOpenFileDialogue()
+    {
+        
+        
+        int returnVal = fileChooser.showOpenDialog(this);
+        return "";
+    }
+
+    @Override
+    public String showSaveFileDialogue()
+    {
+        
+        
+        int returnVal = fileChooser.showSaveDialog(this);
+        return "";
+    }
+
+    @Override
+    public void addActionListenerToOpenMenuItem(ActionListener l)
+    {
+        openMenuItem.addActionListener(l);
+    }
+
+    @Override
+    public JFileChooser getFileChooser()
+    {
+        return fileChooser;
     }
 
     
