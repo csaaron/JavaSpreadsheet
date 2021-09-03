@@ -9,8 +9,6 @@ import java.awt.event.ActionListener;
 import javax.swing.JFileChooser;
 import javax.swing.UIManager;
 
-
-
 /**
  *
  * @author aaron
@@ -24,9 +22,9 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
     public SpreadsheetGUI()
     {
         initComponents();
-        
+
         fileChooser = new JFileChooser();
-        
+
     }
 
     /**
@@ -153,8 +151,7 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JMenuItem closeMenuItem;
@@ -177,7 +174,7 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
     // End of variables declaration//GEN-END:variables
 
     private JFileChooser fileChooser;
-    
+
     @Override
     public SpreadsheetPanel getSpreadsheetPanel()
     {
@@ -229,7 +226,7 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
     @Override
     public void showErrorMessageBox(String message)
     {
-        javax.swing.JOptionPane.showMessageDialog(this, message, 
+        javax.swing.JOptionPane.showMessageDialog(this, message,
                 "Spreadsheet Error", javax.swing.JOptionPane.ERROR_MESSAGE);
     }
 
@@ -297,21 +294,31 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
     @Override
     public String showOpenFileDialogue()
     {
-        
-        
         int returnVal = fileChooser.showOpenDialog(this);
-        return "";
+        
+        if (returnVal == JFileChooser.APPROVE_OPTION)
+        {
+            return fileChooser.getSelectedFile().toString();
+        } 
+        else
+        {
+            return "";
+        }
     }
 
     @Override
     public String showSaveFileDialogue()
     {
         int returnVal = fileChooser.showSaveDialog(this);
-        
+
         if (returnVal == JFileChooser.APPROVE_OPTION)
+        {
             return fileChooser.getSelectedFile().toString();
-        
-        return "";
+        } 
+        else
+        {
+            return "";
+        }
     }
 
     @Override
@@ -319,11 +326,17 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
     {
         openMenuItem.addActionListener(l);
     }
-    
+
     @Override
     public void addActionListenerToSaveMenuItem(ActionListener l)
     {
         saveMenuItem.addActionListener(l);
+    }
+    
+    @Override
+    public void addActionListenerToNewMenuItem(ActionListener l)
+    {
+        newMenuItem.addActionListener(l);
     }
 
     @Override
@@ -332,5 +345,4 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
         return fileChooser;
     }
 
-    
 }

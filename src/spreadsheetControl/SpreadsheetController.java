@@ -31,7 +31,7 @@ public class SpreadsheetController
 
     private CellValidator validator; // a precompiled default validator for the model
     private CellNormalizer normalizer; // a precompiled default normalizer for the model
-    
+
     private String file;
 
     public SpreadsheetController(ISpreadsheetWindow view)
@@ -42,7 +42,7 @@ public class SpreadsheetController
         validator = new CellValidator();
         normalizer = new CellNormalizer();
         String version = "ps6";
-        
+
         sheet = new Spreadsheet(validator, normalizer, version);
         String windowText = "";
         initView();
@@ -68,6 +68,7 @@ public class SpreadsheetController
         window.addActionListenerToContentsBox(new SpreadsheetAddContentsToCellActionListener());
         window.addActionListenerToOpenMenuItem(new SpreadsheetOpenActionListener());
         window.addActionListenerToSaveMenuItem(new SpreadsheetSaveActionListener());
+        window.addActionListenerToNewMenuItem(new SpreadsheetNewActionListener());
     }
 
     /**
@@ -99,7 +100,13 @@ public class SpreadsheetController
      */
     private void OpenNewSheet()
     {
-        window.createNew();
+
+        // empty the sheet
+        emptyAllCells(sheet.getNamesOfAllNonemptyCells());
+        // open the spreadsheet
+        sheet = new spreadsheet.Spreadsheet(validator, normalizer, "ps6");
+        initView();
+
     }
 
     /**
@@ -298,7 +305,7 @@ public class SpreadsheetController
 
             // window title is name of new file 
             String fileName = Paths.get(fileLocation).getFileName().toString();
-            window.setWindowText(fileName);
+            setWindowText(fileName, false);
 
             // set contents of the spreadsheet pane
             Iterable<String> nonEmpty = sheet.getNamesOfAllNonemptyCells();
@@ -311,6 +318,7 @@ public class SpreadsheetController
         catch (SpreadsheetReadWriteException ex)
         {
             window.showErrorMessageBox(ex.getMessage());
+
         }
 
     }
@@ -349,7 +357,7 @@ public class SpreadsheetController
                 return false;
             }
         }
-        
+
         return false;
     }
 
@@ -359,8 +367,11 @@ public class SpreadsheetController
      */
     private void open()
     {
-        window.showOpenFileDialogue();
-
+        String fileName = window.showOpenFileDialogue();
+        if (fileName != null && !fileName.trim().equals(""))
+        {
+            openSpreadsheetFromFile(fileName);
+        }
     }
 
     /**
@@ -394,24 +405,22 @@ public class SpreadsheetController
 
             if (fileNamePosition > 0 && fileNamePosition < file.length() - 1)
             {
-                return file.substring(fileNamePosition +1);
-            }
-            else
+                return file.substring(fileNamePosition + 1);
+            } else
             {
                 return file;
             }
         }
-        
+
         return file;
     }
-    
+
     private void setWindowText(String fileName, boolean changed)
     {
-        String text = changed? fileName + " | Unsaved" : fileName + " | Saved";
+        String text = changed ? fileName + " | Unsaved" : fileName + " | Saved";
         file = fileName;
         window.setWindowText(text);
     }
-    
 
     private class SpreadsheetSelectedCellItemListener implements ItemListener
     {
@@ -463,7 +472,17 @@ public class SpreadsheetController
                 }
             }
         }
+    }
+    
+    private class SpreadsheetNewActionListener implements ActionListener
+    {
 
+        @Override
+        public void actionPerformed(ActionEvent arg0)
+        {
+            OpenNewSheet();
+        }
+        
     }
 
 }
