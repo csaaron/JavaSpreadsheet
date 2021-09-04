@@ -217,6 +217,7 @@ public class SpreadsheetController
         catch (InvalidNameException | FormulaFormatException e)
         {
             window.showErrorMessageBox(e.getMessage());
+            
         }
 
         window.setFocusToContentBox();

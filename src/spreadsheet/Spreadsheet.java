@@ -110,6 +110,8 @@ public class Spreadsheet extends AbstractSpreadsheet
 				throw new SpreadsheetReadWriteException(e.getMessage());
 			}
 		}
+                
+                setChanged(false);
 	}
 
 	/**
