@@ -13,6 +13,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.nio.file.Paths;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import spreadsheet.InvalidNameException;
 import spreadsheet.Spreadsheet;
@@ -213,11 +215,13 @@ public class SpreadsheetController
         catch (CircularException e)
         {
             window.showErrorMessageBox("Circular dependency detected");
+            //window.showErrorMessageBox("Cell name: " + cellName + "\n Cell Contents: " + sheet.getCellContents(cellName));
+
         }
         catch (InvalidNameException | FormulaFormatException e)
         {
             window.showErrorMessageBox(e.getMessage());
-            
+            //window.showErrorMessageBox("Cell name: " + cellName + "\n Cell Contents: " + sheet.getCellContents(cellName));
         }
 
         window.setFocusToContentBox();
