@@ -330,20 +330,19 @@ public class Spreadsheet extends AbstractSpreadsheet
 	{
 		cellNameValidator(name);
 		setChanged(true);
-
-		// Empty string is a special case which clears the cell.
-		if (text.equals(""))
-		{
-			emptyCell(name);
-			Iterable<String> recalcCells = getCellsToRecalculate(name);
-			return hashSetifyIterable(recalcCells);
-		}
+                
 
 		Cell cell = new Cell(text);
 		addCellToHashMap(name, cell);
 
 		Iterable<String> recalcCells = getCellsToRecalculate(name);
 		recalculateCells(recalcCells);
+                
+                // Empty string is a special case which clears the cell.
+		if (text.equals(""))
+		{
+                    emptyCell(name);
+                }
 
 		return hashSetifyIterable(recalcCells);
 	}
