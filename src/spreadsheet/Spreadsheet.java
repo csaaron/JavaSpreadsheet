@@ -309,7 +309,7 @@ public class Spreadsheet extends AbstractSpreadsheet
 			String formulaContent = content.length() > 1 ? content.substring(1) : "";
 			Formula formula = new Formula(formulaContent, super.getNormalize(), super.getIsValid());
 			return setCellContents(normalName, formula);
-		}
+                }
 
 		return setCellContents(normalName, content);
 
@@ -329,8 +329,7 @@ public class Spreadsheet extends AbstractSpreadsheet
 	protected Set<String> setCellContents(String name, String text) throws InvalidNameException, CircularException
 	{
 		cellNameValidator(name);
-		setChanged(true);
-                
+		setChanged(true);           
 
 		Cell cell = new Cell(text);
 		addCellToHashMap(name, cell);
@@ -446,8 +445,9 @@ public class Spreadsheet extends AbstractSpreadsheet
 	 */
 	private void recalculateCells(Iterable<String> recalcCells)
 	{
-		for (String cell : recalcCells)
-			cells.get(cell).recalculateCellValue(defaultLookup);
+            for (String cell : recalcCells)
+                cells.get(cell).recalculateCellValue(defaultLookup);
+            
 	}
 
 	/**
@@ -645,4 +645,6 @@ public class Spreadsheet extends AbstractSpreadsheet
 		}
 
 	}
+        
+        
 }
