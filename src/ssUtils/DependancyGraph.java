@@ -294,7 +294,7 @@ public class DependancyGraph
         
         if (s.length() > 2)
         {
-            s.delete(s.length() - 2, s.length() -1);
+            s.delete(s.length() - 2, s.length());
         }
         
         s.append(" }");
@@ -308,7 +308,9 @@ public class DependancyGraph
     public void printDependencyGraph()
     {
         //TODO: remove method before marking project complete
+        System.out.println("Size: " + size());
         System.out.println("Dependents: " + getStringAdjacencyList(list));
         System.out.println("Dependees: " + getStringAdjacencyList(dependees));
+        System.out.println();
     }
 }

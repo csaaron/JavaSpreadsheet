@@ -310,6 +310,7 @@ public class Spreadsheet extends AbstractSpreadsheet
 			Formula formula = new Formula(formulaContent, super.getNormalize(), super.getIsValid());
 			return setCellContents(normalName, formula);
                 }
+                
 
 		return setCellContents(normalName, content);
 
@@ -555,10 +556,13 @@ public class Spreadsheet extends AbstractSpreadsheet
 	 */
 	private void addCellToHashMap(String name, Cell cell)
 	{
-
-		if (cells.containsKey(name) && cells.get(name).getType() == CellType.FORMULA_TYPE)
+                // Do not want to overwrite new formula's dependents 
+                //if this cell is a formula type
+		if (cells.containsKey(name) 
+                        && cells.get(name).getType() == CellType.FORMULA_TYPE 
+                        && cell.getType() != CellType.FORMULA_TYPE)
 		{
-			dependencies.replaceDependents(name, new ArrayList<String>());
+                    dependencies.replaceDependents(name, new ArrayList<String>());
 		}
 
 		cells.put(name, cell);
@@ -570,7 +574,10 @@ public class Spreadsheet extends AbstractSpreadsheet
 	 */
 	private HashSet<String> hashSetifyIterable(Iterable<String> iterable)
 	{
-		if (iterable instanceof HashSet)
+             // TODO: For troubleshooting only, must delete before marking project complete
+             dependencies.printDependencyGraph();
+            
+            if (iterable instanceof HashSet)
 			return (HashSet<String>) iterable;
 
 		if (iterable instanceof Collection)
@@ -581,7 +588,10 @@ public class Spreadsheet extends AbstractSpreadsheet
 		{
 			set.add(s);
 		}
-		return set;
+		
+               
+                
+                return set;
 
 	}
 
