@@ -264,53 +264,5 @@ public class DependancyGraph
         return false; // we didn't remove anything
     }
 
-    /**
-     * returns a string representation of list in the format of 
-     * { ("s1","t1"), ("s2","t2") ... ("sn", "tn") } 
-     */
-    private String getStringAdjacencyList(HashMap<String, HashSet<String>> list)
-    {
-        //TODO: remove method before marking project complete
-        
-        StringBuilder s = new StringBuilder();
-        
-        s.append("{ ");
-        
-        if (!list.isEmpty())
-        {
-            Set<String> dependentVert = list.keySet();
-            for (String vert : dependentVert)
-            {
-                HashSet<String> edges = list.get(vert);
-                if (edges != null)
-                {
-                    for (String edge : edges)
-                    {
-                        s.append(String.format("(\"%s\",\"%s\"), ", vert, edge));
-                    }
-                }
-            }
-        }
-        
-        if (s.length() > 2)
-        {
-            s.delete(s.length() - 2, s.length());
-        }
-        
-        s.append(" }");
-        
-        return s.toString();
-    }
     
-    /**
-     * Prints to System.out this dependencyGraph
-     */
-    public void printDependencyGraph()
-    {
-        //TODO: remove method before marking project complete
-        System.out.println("Size: " + size());
-        System.out.println("Dependents: " + getStringAdjacencyList(list));
-        System.out.println("Dependees: " + getStringAdjacencyList(dependees));
-        System.out.println();
-    }
 }
