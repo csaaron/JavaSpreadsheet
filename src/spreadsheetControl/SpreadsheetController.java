@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package spreadsheetControl;
 
 import java.awt.event.ActionEvent;
@@ -11,7 +6,10 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.nio.file.Paths;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,22 +32,13 @@ public class SpreadsheetController
     private Spreadsheet sheet; // reference to the model
     private ISpreadsheetWindow window; // referrence to the view (gui)
 
-    private CellValidator validator; // a precompiled default validator for the model
-    private CellNormalizer normalizer; // a precompiled default normalizer for the model
-
-    private String file;
+    private String file; // holds name of file for updating spreadsheet window text
 
     public SpreadsheetController(ISpreadsheetWindow view)
     {
-
+        sheet = new Spreadsheet(new CellValidator(), new CellNormalizer(), "ps6");
         window = view;
 
-        validator = new CellValidator();
-        normalizer = new CellNormalizer();
-        String version = "ps6";
-
-        sheet = new Spreadsheet(validator, normalizer, version);
-        String windowText = "";
         initView();
         initController();
     }
@@ -76,6 +65,8 @@ public class SpreadsheetController
         window.addActionListenerToNewMenuItem(new SpreadsheetNewActionListener());
         window.addFormClosingAction(new SpreadsheetCloseWindowListener());
         window.addActionListenerToCloseMenuItem(new SpreadsheetCloseActionListener());
+        window.addActionListenerToAboutMenuItem(new SpreadsheetAboutActionListener());
+        window.addActionListenerToHowToUseMenuItem(new SpreadsheetHowToUSeActionListener());
     }
 
     /**
@@ -111,7 +102,7 @@ public class SpreadsheetController
         // empty the sheet
         emptyAllCells(sheet.getNamesOfAllNonemptyCells());
         // open the spreadsheet
-        sheet = new spreadsheet.Spreadsheet(validator, normalizer, "ps6");
+        sheet = new spreadsheet.Spreadsheet(new CellValidator(), new CellNormalizer(), "ps6");
         initView();
 
     }
@@ -152,7 +143,8 @@ public class SpreadsheetController
             if (value instanceof String || value instanceof Double)
             {
                 window.setValueBoxText(value.toString());
-            } else
+            }
+            else
             {
                 window.setValueBoxText("FormulaError");
             }
@@ -183,7 +175,8 @@ public class SpreadsheetController
             if (contents instanceof String || contents instanceof Double)
             {
                 window.setContentsBoxText(contents.toString());
-            } else
+            }
+            else
             {
                 window.setContentsBoxText("=" + contents.toString());
             }
@@ -269,7 +262,8 @@ public class SpreadsheetController
             if (value instanceof String || value instanceof Double)
             {
                 window.setCellText(row, col, value.toString());
-            } else
+            }
+            else
             {
                 window.setCellText(row, col, "FormulaError");
             }
@@ -304,7 +298,7 @@ public class SpreadsheetController
         try
         {
             // open the spreadsheet
-            Spreadsheet newSheet = new spreadsheet.Spreadsheet(fileLocation, validator, normalizer, "ps6");
+            Spreadsheet newSheet = new spreadsheet.Spreadsheet(fileLocation, new CellValidator(), new CellNormalizer(), "ps6");
 
             // Opening new spreadsheet did not throw exception
             Spreadsheet oldSheet = sheet;
@@ -336,19 +330,49 @@ public class SpreadsheetController
     /**
      * Opens the about file in the default text editor
      */
-    private void openAbout()
+    private void openAboutDiolog()
     {
-        // TODO: complete method
+        //read file contents
+        String aboutFile = "resources/About.html";
+        String aboutFileText = readFileToString(aboutFile);
+        
+        // place text in popup
+        window.showOkayMessageBox(aboutFileText, "About");
     }
 
     /**
      * Opens the how to use file in the default text editor
      */
-    private void howToUse()
+    private void openHowToUseDiolog()
     {
-        // TODO: complete method
+        // read file contents
+        String howToUseFile = "resources/HowToUse.html";
+        String howToUseFileText = readFileToString(howToUseFile);
+        
+        // place text in popup
+        window.showOkayMessageBox(howToUseFileText, "How to Use");
+        
     }
 
+    
+    private String readFileToString(String filePath)
+    {
+        StringBuilder contents = new StringBuilder();
+        try (Scanner scan = new Scanner(new File(filePath)))
+        {
+            while (scan.hasNextLine())
+            {
+                contents.append(scan.nextLine());
+            }
+        }
+        catch (FileNotFoundException ex)
+        {
+            window.showErrorMessageBox("Error reading the file \"" + filePath + "\"");
+        }
+        
+        return contents.toString();
+    }
+    
     /**
      * Saves sheet to file
      */
@@ -429,7 +453,7 @@ public class SpreadsheetController
         {
             return true;
         }
-        
+
         return false;
 
     }
@@ -443,7 +467,8 @@ public class SpreadsheetController
             if (fileNamePosition > 0 && fileNamePosition < file.length() - 1)
             {
                 return file.substring(fileNamePosition + 1);
-            } else
+            }
+            else
             {
                 return file;
             }
@@ -493,7 +518,6 @@ public class SpreadsheetController
             {
                 open();
             }
-
         }
 
     }
@@ -505,12 +529,9 @@ public class SpreadsheetController
         public void actionPerformed(ActionEvent arg0)
         {
             String file = window.showSaveFileDialogue();
-            if (file != null && !file.trim().equals(""))
+            if (file != null && !file.trim().equals("") && save(file))
             {
-                if (save(file))
-                {
-                    setWindowText(getFileNameFromPath(file), false);
-                }
+                setWindowText(getFileNameFromPath(file), false);
             }
         }
     }
@@ -521,17 +542,17 @@ public class SpreadsheetController
         @Override
         public void actionPerformed(ActionEvent arg0)
         {
-            if (!sheet.getChanged()  || modifiedSpreadsheetDialogueBox())
+            if (!sheet.getChanged() || modifiedSpreadsheetDialogueBox())
             {
                 openNewSheet();
             }
         }
 
     }
-    
+
     private class SpreadsheetCloseActionListener implements ActionListener
     {
-        
+
         @Override
         public void actionPerformed(ActionEvent arg0)
         {
@@ -541,9 +562,10 @@ public class SpreadsheetController
             }
         }
     }
-    
+
     private class SpreadsheetCloseWindowListener extends WindowAdapter
     {
+
         @Override
         public void windowClosing(WindowEvent e)
         {
@@ -551,8 +573,30 @@ public class SpreadsheetController
             {
                 window.closeWindow();
             }
-            
+
         }
+    }
+    
+    private class SpreadsheetAboutActionListener implements ActionListener
+    {
+
+        @Override
+        public void actionPerformed(ActionEvent arg0)
+        {
+            openAboutDiolog();
+        }
+        
+    }
+    
+    private class SpreadsheetHowToUSeActionListener implements ActionListener
+    {
+
+        @Override
+        public void actionPerformed(ActionEvent arg0)
+        {
+            openHowToUseDiolog();
+        }
+        
     }
 
 }

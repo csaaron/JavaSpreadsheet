@@ -7,7 +7,6 @@ package spreadsheetGUI;
 
 import java.awt.event.ActionListener;
 import java.awt.event.WindowListener;
-import java.io.FileFilter;
 import javax.swing.JFileChooser;
 
 public interface ISpreadsheetWindow
@@ -58,6 +57,11 @@ public interface ISpreadsheetWindow
      * and caption
      */
     public int showOkayCancelMessageBox(String message, String caption);
+    
+    /**
+     * Shows a generic message box with the corresponding message and caption
+     */
+    public void showOkayMessageBox(String message, String caption);
 
     /**
      * Sets the cell in the SpreadsheetPanel located at row, col to the String
@@ -136,10 +140,22 @@ public interface ISpreadsheetWindow
     public void addActionListenerToCloseMenuItem(ActionListener l);
     
     /**
+     * Adds a listener to the How To Use menu item l 
+     */
+    public void addActionListenerToHowToUseMenuItem(ActionListener l);
+    
+    /**
+     * Adds a listener to the About menu item l 
+     */
+    public void addActionListenerToAboutMenuItem(ActionListener l);
+    
+    /**
      * Returns the file chooser used by this window. 
      * 
      * Allows controller to control settings offered by file chooser
      */
     public JFileChooser getFileChooser();
+    
+    
     
 }

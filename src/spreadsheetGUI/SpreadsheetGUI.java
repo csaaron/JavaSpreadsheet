@@ -7,6 +7,7 @@ package spreadsheetGUI;
 
 import java.awt.event.ActionListener;
 import java.awt.event.WindowListener;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
@@ -39,6 +40,11 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
     private void initComponents()
     {
 
+        spreadsheetProgramDialog = new javax.swing.JDialog();
+        dialogScrollPane = new javax.swing.JScrollPane();
+        dialogLabel = new javax.swing.JLabel();
+        dialogButtonPanel = new javax.swing.JPanel();
+        dialogOkButton = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         currentCellLabel = new javax.swing.JLabel();
         currentCellTextField = new javax.swing.JTextField();
@@ -57,6 +63,46 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
         helpMenu = new javax.swing.JMenu();
         aboutMenuItem = new javax.swing.JMenuItem();
         howToUseMenuItem = new javax.swing.JMenuItem();
+
+        spreadsheetProgramDialog.setMaximumSize(new java.awt.Dimension(450, 2147483647));
+
+        dialogScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        dialogScrollPane.setAutoscrolls(true);
+        dialogScrollPane.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        dialogScrollPane.setMaximumSize(new java.awt.Dimension(450, 32767));
+
+        dialogLabel.setMaximumSize(new java.awt.Dimension(250, 0));
+        dialogScrollPane.setViewportView(dialogLabel);
+
+        spreadsheetProgramDialog.getContentPane().add(dialogScrollPane, java.awt.BorderLayout.CENTER);
+
+        dialogOkButton.setText("Ok");
+        dialogOkButton.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                dialogOkButtonActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout dialogButtonPanelLayout = new javax.swing.GroupLayout(dialogButtonPanel);
+        dialogButtonPanel.setLayout(dialogButtonPanelLayout);
+        dialogButtonPanelLayout.setHorizontalGroup(
+            dialogButtonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, dialogButtonPanelLayout.createSequentialGroup()
+                .addContainerGap(428, Short.MAX_VALUE)
+                .addComponent(dialogOkButton)
+                .addContainerGap())
+        );
+        dialogButtonPanelLayout.setVerticalGroup(
+            dialogButtonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, dialogButtonPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(dialogOkButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        spreadsheetProgramDialog.getContentPane().add(dialogButtonPanel, java.awt.BorderLayout.PAGE_END);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
 
@@ -153,6 +199,11 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void dialogOkButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_dialogOkButtonActionPerformed
+    {//GEN-HEADEREND:event_dialogOkButtonActionPerformed
+        spreadsheetProgramDialog.setVisible(false);
+    }//GEN-LAST:event_dialogOkButtonActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
@@ -162,6 +213,10 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
     private javax.swing.JTextField contentsTextField;
     private javax.swing.JLabel currentCellLabel;
     private javax.swing.JTextField currentCellTextField;
+    private javax.swing.JPanel dialogButtonPanel;
+    private javax.swing.JLabel dialogLabel;
+    private javax.swing.JButton dialogOkButton;
+    private javax.swing.JScrollPane dialogScrollPane;
     private javax.swing.JMenu fileMenu;
     private javax.swing.JMenu helpMenu;
     private javax.swing.JMenuItem howToUseMenuItem;
@@ -170,6 +225,7 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
     private javax.swing.JMenuItem openMenuItem;
     private javax.swing.JMenuItem saveMenuItem;
     private spreadsheetGUI.SpreadsheetPanel spreadsheetPanel;
+    private javax.swing.JDialog spreadsheetProgramDialog;
     private javax.swing.JLabel valueLabel;
     private javax.swing.JTextField valueTextField;
     private javax.swing.JMenuBar windowMenuBar;
@@ -231,6 +287,24 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
     {
         return JOptionPane.showConfirmDialog(this, message, caption, 
                 JOptionPane.YES_NO_CANCEL_OPTION);
+    }
+    
+    @Override
+    public void showOkayMessageBox(String message, String caption)
+    {
+        // avoid updating dialog while visible
+        if (spreadsheetProgramDialog.isVisible())
+        {
+            spreadsheetProgramDialog.setVisible(false);
+        }
+        
+        dialogLabel.setText(message);
+        spreadsheetProgramDialog.setTitle(caption);
+        spreadsheetProgramDialog.setSize(spreadsheetProgramDialog.getPreferredSize().width, 
+                (int)(spreadsheetProgramDialog.getPreferredSize().width * 0.66));
+        spreadsheetProgramDialog.setLocationRelativeTo(this);
+        spreadsheetProgramDialog.setAlwaysOnTop(rootPaneCheckingEnabled);
+        spreadsheetProgramDialog.setVisible(rootPaneCheckingEnabled);   
     }
 
     @Override
@@ -339,11 +413,27 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
     {
         closeMenuItem.addActionListener(l);
     }
+    
+     @Override
+    public void addActionListenerToHowToUseMenuItem(ActionListener l)
+    {
+        howToUseMenuItem.addActionListener(l);
+    }
+
+    @Override
+    public void addActionListenerToAboutMenuItem(ActionListener l)
+    {
+        aboutMenuItem.addActionListener(l);
+    }
 
     @Override
     public JFileChooser getFileChooser()
     {
         return fileChooser;
     }
+
+   
+
+    
 
 }
