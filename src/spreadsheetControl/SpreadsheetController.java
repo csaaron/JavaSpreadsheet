@@ -11,8 +11,6 @@ import java.io.FileNotFoundException;
 import java.nio.file.Paths;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import spreadsheet.InvalidNameException;
 import spreadsheet.Spreadsheet;
@@ -31,18 +29,24 @@ public class SpreadsheetController
 
     private Spreadsheet sheet; // reference to the model
     private ISpreadsheetWindow window; // referrence to the view (gui)
-
     private String file; // holds name of file for updating spreadsheet window text
 
+    /**
+     * Creates a new SpreadsheetController object attached to the given
+     * ISpreadsheetWindow
+     */
     public SpreadsheetController(ISpreadsheetWindow view)
     {
         sheet = new Spreadsheet(new CellValidator(), new CellNormalizer(), "ps6");
         window = view;
 
         initView();
-        initController();
+        initListeners();
     }
 
+    /**
+     * Initializes the GUI's look
+     */
     private void initView()
     {
 
@@ -55,7 +59,10 @@ public class SpreadsheetController
         updateCurrentCellBoxes();
     }
 
-    private void initController()
+    /**
+     * Adds action listeners to gui elements
+     */
+    private void initListeners()
     {
         window.getSpreadsheetPanel().addItemListener(new SpreadsheetSelectedCellItemListener());
         window.addActionListenerToEnterContentsButton(new SpreadsheetAddContentsToCellActionListener());
@@ -71,7 +78,7 @@ public class SpreadsheetController
 
     /**
      * Gets the currently selected cell's zero indexed row and column and sets
-     * the current cell text to the normalized cell name
+     * the current cell TextField to the normalized cell name
      */
     private void displayCurrentCellName(SpreadsheetPanel ss)
     {
@@ -102,7 +109,8 @@ public class SpreadsheetController
         // empty the sheet
         emptyAllCells(sheet.getNamesOfAllNonemptyCells());
         // open the spreadsheet
-        sheet = new spreadsheet.Spreadsheet(new CellValidator(), new CellNormalizer(), "ps6");
+        sheet = new spreadsheet.Spreadsheet(new CellValidator(),
+                new CellNormalizer(), "ps6");
         initView();
 
     }
@@ -126,7 +134,7 @@ public class SpreadsheetController
     }
 
     /**
-     * Replaces the current value text box to the looked-up value of the cell
+     * Replaces the current value TextField to the looked-up value of the cell
      */
     private void setCellValueBox(SpreadsheetPanel panel)
     {
@@ -158,7 +166,7 @@ public class SpreadsheetController
 
     /**
      * Gets the contents of a given cell from the model and places it in the
-     * current cell contents box for updating
+     * cell contents TextField
      */
     private void setCellContentsBox(SpreadsheetPanel panel)
     {
@@ -188,9 +196,9 @@ public class SpreadsheetController
     }
 
     /**
-     * Gets the current text in the current cell contents box sets it to the
-     * model's cell contents and updates the view cell value. If an error
-     * occurs, creates a message box with the message that an error occurred.
+     * Gets the text in the current cell TextField and sets it to the model's
+     * cell contents then updates the view's cell value. If an error occurs,
+     * creates a message box with the message that an error occurred.
      */
     private void setCellContentsFromContentsBox()
     {
@@ -201,27 +209,25 @@ public class SpreadsheetController
 
         try
         {
-            Set<String> cellsToUpdate = sheet.setContentsOfCell(cellName, window.getContentsBoxText().trim());
+            Set<String> cellsToUpdate = sheet.setContentsOfCell(cellName,
+                    window.getContentsBoxText().trim());
             setSpreadsheetPanelValues(cellsToUpdate);
             updateCurrentCellBoxes();
         }
         catch (CircularException e)
         {
             window.showErrorMessageBox("Circular dependency detected");
-            //window.showErrorMessageBox("Cell name: " + cellName + "\n Cell Contents: " + sheet.getCellContents(cellName));
-
         }
         catch (InvalidNameException | FormulaFormatException e)
         {
             window.showErrorMessageBox(e.getMessage());
-            //window.showErrorMessageBox("Cell name: " + cellName + "\n Cell Contents: " + sheet.getCellContents(cellName));
         }
 
         window.setFocusToContentBox();
     }
 
     /**
-     * Updates text boxes at the top of a spreadsheet window
+     * Updates TextFields at the top of a spreadsheet window
      */
     private void updateCurrentCellBoxes()
     {
@@ -249,10 +255,10 @@ public class SpreadsheetController
      */
     private void setSpreadsheetPanelValue(String cell)
     {
-        Object value;
+
         try
         {
-            value = sheet.getCellValue(cell);
+            Object value = sheet.getCellValue(cell);
 
             int row = convertCellNameToRow(cell);
             int col = convertCellNameToColumn(cell);
@@ -275,7 +281,7 @@ public class SpreadsheetController
     }
 
     /**
-     * Helper method for OpenSpreadsheetFromFile Empties the contents of the
+     * Helper method for openSpreadsheetFromFile. Empties the contents of the
      * spreadsheet pane
      */
     private void emptyAllCells(Iterable<String> cellsToEmpty)
@@ -290,7 +296,7 @@ public class SpreadsheetController
 
     /**
      * Empties the spreadsheet pane and sets its contents to the new spreadsheet
-     * model fileLocation
+     * model read from fileLocation
      */
     private void openSpreadsheetFromFile(String fileLocation)
     {
@@ -298,7 +304,8 @@ public class SpreadsheetController
         try
         {
             // open the spreadsheet
-            Spreadsheet newSheet = new spreadsheet.Spreadsheet(fileLocation, new CellValidator(), new CellNormalizer(), "ps6");
+            Spreadsheet newSheet = new spreadsheet.Spreadsheet(fileLocation,
+                    new CellValidator(), new CellNormalizer(), "ps6");
 
             // Opening new spreadsheet did not throw exception
             Spreadsheet oldSheet = sheet;
@@ -322,43 +329,44 @@ public class SpreadsheetController
         catch (SpreadsheetReadWriteException ex)
         {
             window.showErrorMessageBox(ex.getMessage());
-
         }
 
     }
 
     /**
-     * Opens the about file in the default text editor
+     * Opens the about file in a dialog box
      */
-    private void openAboutDiolog()
+    private void openAboutDialog()
     {
         //read file contents
         String aboutFile = "resources/About.html";
         String aboutFileText = readFileToString(aboutFile);
-        
+
         // place text in popup
         window.showOkayMessageBox(aboutFileText, "About");
     }
 
     /**
-     * Opens the how to use file in the default text editor
+     * Opens the how to use file in a dialog box
      */
-    private void openHowToUseDiolog()
+    private void openHowToUseDialog()
     {
         // read file contents
         String howToUseFile = "resources/HowToUse.html";
         String howToUseFileText = readFileToString(howToUseFile);
-        
+
         // place text in popup
         window.showOkayMessageBox(howToUseFileText, "How to Use");
-        
+
     }
 
-    
+    /**
+     * Reads in a file located at filePath and returns its contents as a String
+     */
     private String readFileToString(String filePath)
     {
         StringBuilder contents = new StringBuilder();
-        try (Scanner scan = new Scanner(new File(filePath)))
+        try ( Scanner scan = new Scanner(new File(filePath)))
         {
             while (scan.hasNextLine())
             {
@@ -369,10 +377,10 @@ public class SpreadsheetController
         {
             window.showErrorMessageBox("Error reading the file \"" + filePath + "\"");
         }
-        
+
         return contents.toString();
     }
-    
+
     /**
      * Saves sheet to file
      */
@@ -396,7 +404,7 @@ public class SpreadsheetController
     }
 
     /**
-     * Opens a file dialogue box and opens the chosen file in this window. If
+     * Opens a file dialog box and opens the chosen file in this window. If
      * information will be changed, prompts user to save.
      */
     private void open()
@@ -422,7 +430,7 @@ public class SpreadsheetController
         message.append("Unsaved changes detected in current spreadsheet " + window.getWindowText());
         message.append("\n\nSave changes?");
         String caption = "Save Changes?";
-        int save = window.showOkayCancelMessageBox(message.toString(), caption);
+        int save = window.showYesNoCancelMessageBox(message.toString(), caption);
 
         // cancel selected, do nothing and return false
         if (save == JOptionPane.CANCEL_OPTION)
@@ -435,13 +443,10 @@ public class SpreadsheetController
         if (save == JOptionPane.YES_OPTION)
         {
             String file = window.showSaveFileDialogue();
-            if (file != null && !file.trim().equals(""))
+            if (file != null && !file.trim().equals("") && save(file))
             {
-                if (save(file))
-                {
-                    setWindowText(getFileNameFromPath(file), false);
-                    return true;
-                }
+                setWindowText(getFileNameFromPath(file), false);
+                return true;
             }
 
             return false;
@@ -458,25 +463,33 @@ public class SpreadsheetController
 
     }
 
-    private String getFileNameFromPath(String file)
+    /**
+     * Takes in an absolute file path and returns the file name portion as a
+     * String
+     */
+    private String getFileNameFromPath(String filePath)
     {
-        if (file != null && !file.trim().equals(""))
+        if (filePath != null && !filePath.trim().equals(""))
         {
-            int fileNamePosition = file.lastIndexOf('/');
+            int fileNamePosition = filePath.lastIndexOf('/');
 
-            if (fileNamePosition > 0 && fileNamePosition < file.length() - 1)
+            if (fileNamePosition > 0 && fileNamePosition < filePath.length() - 1)
             {
-                return file.substring(fileNamePosition + 1);
+                return filePath.substring(fileNamePosition + 1);
             }
             else
             {
-                return file;
+                return filePath;
             }
         }
 
-        return file;
+        return filePath;
     }
 
+    /**
+     * Sets window text to fileName and indicates if the spreadsheet has been
+     * changed based on the boolean changed
+     */
     private void setWindowText(String fileName, boolean changed)
     {
         String text = changed ? fileName + " | Unsaved" : fileName + " | Saved";
@@ -484,9 +497,24 @@ public class SpreadsheetController
         window.setWindowText(text);
     }
 
+    /**
+     * ***********************************************************************
+     *
+     * Action Listener implementations
+     *
+     ************************************************************************
+     */
+    /**
+     * ItemListener that defines what happens when a cell has been selected in
+     * the GUI
+     */
     private class SpreadsheetSelectedCellItemListener implements ItemListener
     {
 
+        /**
+         * Updates the current cell information at the top of window when a cell
+         * is selected
+         */
         @Override
         public void itemStateChanged(ItemEvent arg0)
         {
@@ -495,9 +523,17 @@ public class SpreadsheetController
 
     }
 
+    /**
+     * ActionListener that defines what happens when a cells contents has been
+     * added or changed
+     */
     private class SpreadsheetAddContentsToCellActionListener implements ActionListener
     {
 
+        /**
+         * Updates the spreadsheet grid and current cell information at the top
+         * of the window when an update is made
+         */
         @Override
         public void actionPerformed(ActionEvent arg0)
         {
@@ -508,9 +544,18 @@ public class SpreadsheetController
 
     }
 
+    /**
+     * ActionListener that defines what happens when the user Selects "Open"
+     * from File Menu
+     */
     private class SpreadsheetOpenActionListener implements ActionListener
     {
 
+        /**
+         * If unsaved changes are in the spreadsheet prompts the user to save
+         * then launches a file chooser dialog and opens the user selected
+         * spreadsheet
+         */
         @Override
         public void actionPerformed(ActionEvent arg0)
         {
@@ -522,9 +567,17 @@ public class SpreadsheetController
 
     }
 
+    /**
+     * Action Listener that defines what happens when the user selects "Save"
+     * from the "File" menu
+     */
     private class SpreadsheetSaveActionListener implements ActionListener
     {
 
+        /**
+         * Opens a file chooser dialog and saves this spreadsheet at the user
+         * selected location
+         */
         @Override
         public void actionPerformed(ActionEvent arg0)
         {
@@ -536,9 +589,17 @@ public class SpreadsheetController
         }
     }
 
+    /**
+     * ActionListener that defines what happens when a user selects "New" from
+     * the "File" Menu
+     */
     private class SpreadsheetNewActionListener implements ActionListener
     {
 
+        /**
+         * If unsaved changes are in the spreadsheet prompts the user to save
+         * then opens a new blank spreadsheet
+         */
         @Override
         public void actionPerformed(ActionEvent arg0)
         {
@@ -550,9 +611,17 @@ public class SpreadsheetController
 
     }
 
+    /**
+     * ActionListener that defines what happens when a user selects "Close" from
+     * the "File" menu
+     */
     private class SpreadsheetCloseActionListener implements ActionListener
     {
 
+        /**
+         * If unsaved changes are in the spreadsheet prompts the user to save
+         * then closes the window
+         */
         @Override
         public void actionPerformed(ActionEvent arg0)
         {
@@ -563,9 +632,17 @@ public class SpreadsheetController
         }
     }
 
+    /**
+     * WindowAdapter that defines what happens when a user presses the window
+     * 'X' button to close the window
+     */
     private class SpreadsheetCloseWindowListener extends WindowAdapter
     {
 
+        /**
+         * If unsaved changes are in the spreadsheet prompts the user to save
+         * then closes the window
+         */
         @Override
         public void windowClosing(WindowEvent e)
         {
@@ -576,27 +653,42 @@ public class SpreadsheetController
 
         }
     }
-    
+
+    /**
+     * ActionListener that defines what happens when the user selects About from
+     * the "Help" menu
+     */
     private class SpreadsheetAboutActionListener implements ActionListener
     {
 
+        /**
+         * Opens a dialog containing information about this application
+         */
         @Override
         public void actionPerformed(ActionEvent arg0)
         {
-            openAboutDiolog();
+            openAboutDialog();
         }
-        
+
     }
-    
+
+    /**
+     * ActionListener that defines what happens when a user selects "How To Use"
+     * from the "Help" menu
+     */
     private class SpreadsheetHowToUSeActionListener implements ActionListener
     {
 
+        /**
+         * Opens a dialog containing information informing the user how to use
+         * this application
+         */
         @Override
         public void actionPerformed(ActionEvent arg0)
         {
-            openHowToUseDiolog();
+            openHowToUseDialog();
         }
-        
+
     }
 
 }

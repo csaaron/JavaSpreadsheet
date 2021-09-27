@@ -18,18 +18,20 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 import spreadsheet.Cell.CellType;
-import ssUtils.IsValidFunctor;
+import static spreadsheet.Cell.CellType.FORMULA_TYPE;
 import ssUtils.Normalizer;
 import ssUtils.DependancyGraph;
 import ssUtils.Formula;
 import ssUtils.Lookup;
+import ssUtils.IsValid;
 
 public class Spreadsheet extends AbstractSpreadsheet
 {
+
     // A graph that keeps track of references contained in each formula
     private DependancyGraph dependencies;
 
-    // A HashMap keyed by cell names and contains all non empty cells.
+    // A HashMap keyed by cell names that contains all non empty cells.
     // If a cell becomes empty, will be removed from the dictionary.
     private HashMap<String, Cell> cells;
 
@@ -40,9 +42,10 @@ public class Spreadsheet extends AbstractSpreadsheet
     private Pattern cellNamePattern;
 
     /**
-     * Creates a new spreadsheet. In a new spreadsheet, the contents of every cell
-     * is the empty string. This constructor imposes no extra validity conditions,
-     * normalizes every cell name to itself, and has version "default".
+     * Creates a new spreadsheet. In a new spreadsheet, the contents of every
+     * cell is the empty string. This constructor imposes no extra validity
+     * conditions, normalizes every cell name to itself, and has version
+     * "default".
      */
     public Spreadsheet()
     {
@@ -50,13 +53,13 @@ public class Spreadsheet extends AbstractSpreadsheet
     }
 
     /**
-     * Creates a new Spreadsheet. In a new Spreadsheet, the contents of every cell
-     * is the empty string. The provided isValid delegate is used to impose
-     * additional restrictions to the validity of cell names. The normalize delegate
-     * allows cell names to be stored in a standardized format prior to use. Version
-     * provided to allow user to define versioning schema.
+     * Creates a new Spreadsheet. In a new Spreadsheet, the contents of every
+     * cell is the empty string. The provided isValid delegate is used to impose
+     * additional restrictions to the validity of cell names. The normalize
+     * delegate allows cell names to be stored in a standardized format prior to
+     * use. Version provided to allow user to define versioning schema.
      */
-    public Spreadsheet(IsValidFunctor isValid, Normalizer normalize, String version)
+    public Spreadsheet(IsValid isValid, Normalizer normalize, String version)
     {
         super(isValid, normalize, version);
 
@@ -69,21 +72,22 @@ public class Spreadsheet extends AbstractSpreadsheet
     }
 
     /**
-     * Reads the saved Spreadsheet from the file stored at the provided filePath and
-     * uses it to construct a new Spreadsheet. The new spreadsheet will use the
-     * provided validity delegate, normalization delegate and version.
-     * 
-     * If the version of the saved Spreadsheet does not match the version parameter
-     * provided to the constructor, throws a SpreadsheetReadWriteException.
-     * 
-     * If any other problems such as, invalid names, circular dependencies, problems
-     * opening reading or closing the file occurs, throws a
+     * Reads the saved Spreadsheet from the file stored at the provided filePath
+     * and uses it to construct a new Spreadsheet. The new spreadsheet will use
+     * the provided validity delegate, normalization delegate and version.
+     *
+     * If the version of the saved Spreadsheet does not match the version
+     * parameter provided to the constructor, throws a
      * SpreadsheetReadWriteException.
-     * 
+     *
+     * If any other problems such as, invalid names, circular dependencies,
+     * problems opening reading or closing the file occurs, throws a
+     * SpreadsheetReadWriteException.
+     *
      * @throws SpreadsheetReadWriteException
      */
-    public Spreadsheet(String filePath, IsValidFunctor isValid, Normalizer normalize, String version)
-                    throws SpreadsheetReadWriteException
+    public Spreadsheet(String filePath, IsValid isValid, Normalizer normalize, String version)
+            throws SpreadsheetReadWriteException
     {
         this(isValid, normalize, version);
 
@@ -99,26 +103,27 @@ public class Spreadsheet extends AbstractSpreadsheet
         HashMap<String, String> savedCellContents = savedContents.getCellNamesAndContents();
 
         // turn xml saved cell's into cells for this Spreadhseet
-        for (String cell : savedCellContents.keySet())
+        try
         {
-            try
+            for (String cell : savedCellContents.keySet())
             {
                 setContentsOfCell(cell, savedCellContents.get(cell));
             }
-            catch (Exception e)
-            {
-                throw new SpreadsheetReadWriteException(e.getMessage());
-            }
+        }
+        catch (Exception e)
+        {
+            throw new SpreadsheetReadWriteException(e.getMessage());
         }
 
         setChanged(false);
     }
 
     /**
-     * Returns the version information of the spreadsheet saved in the named file.
-     * If there are any problems opening, reading or closing the file, the method
-     * should throw a SpreadsheetReadWriteException with an explanatory message.
-     * 
+     * Returns the version information of the spreadsheet saved in the named
+     * file. If there are any problems opening, reading or closing the file, the
+     * method should throw a SpreadsheetReadWriteException with an explanatory
+     * message.
+     *
      * @throws SpreadsheetReadWriteException
      */
     @Override
@@ -128,34 +133,36 @@ public class Spreadsheet extends AbstractSpreadsheet
     }
 
     /**
-     * @formatter:off
-     * Writes the contents of this Spreadsheet to the named file using an XML format.
+     * @formatter:off Writes the contents of this Spreadsheet to the named file
+     * using an XML format.
      *
- * The XML elements should be structured as follows:
- * 
- * 
- * <spreadsheet version="version information goes here">
- * 
- * <cell>
- * <name>
- * cell name goes here
- * </name>
- * <contents>
- * cell contents goes here
- * </contents>    
- * </cell>
- * 
- * </spreadsheet>
- * 
- * There should be one cell element for each non-empty cell in the spreadsheet.  
- * If the cell contains a string, it should be written as the contents.  
- * If the cell contains a double d, d.ToString() should be written as the contents.  
- * If the cell contains a Formula f, f.ToString() with "=" prepended should be written as the contents.
- * 
- * If there are any problems opening, writing, or closing the file, the method should throw a
- * SpreadsheetReadWriteException with an explanatory message.
- * @Formatter:on
- */
+     * The XML elements should be structured as follows:
+     *
+     *
+     * <spreadsheet version="version information goes here">
+     *
+     * <cell>
+     * <name>
+     * cell name goes here
+     * </name>
+     * <contents>
+     * cell contents goes here
+     * </contents>
+     * </cell>
+     *
+     * </spreadsheet>
+     *
+     * There should be one cell element for each non-empty cell in the
+     * spreadsheet. If the cell contains a string, it should be written as the
+     * contents. If the cell contains a double d, d.ToString() should be written
+     * as the contents. If the cell contains a Formula f, f.ToString() with "="
+     * prepended should be written as the contents.
+     *
+     * If there are any problems opening, writing, or closing the file, the
+     * method should throw a SpreadsheetReadWriteException with an explanatory
+     * message.
+     * @Formatter:on
+     */
     @Override
     public void save(String filename) throws SpreadsheetReadWriteException
     {
@@ -207,9 +214,10 @@ public class Spreadsheet extends AbstractSpreadsheet
 
     /**
      * If name is null or invalid throws an InvalidNameException
-     * 
-     * Otherwise, returns the value (as opposed to the contents) of the named cell.
-     * The return value should be either a string, a double or a FormulaError.
+     *
+     * Otherwise, returns the value (as opposed to the contents) of the named
+     * cell. The return value should be either a string, a double or a
+     * FormulaError.
      */
     @Override
     public Object getCellValue(String name) throws InvalidNameException
@@ -218,13 +226,18 @@ public class Spreadsheet extends AbstractSpreadsheet
         cellNameValidator(normalizedName);
 
         if (cells.containsKey(normalizedName))
-                return cells.get(normalizedName).getCellValue();
+        {
+            return cells.get(normalizedName).getCellValue();
+        }
         else
-                return "";
+        {
+            return "";
+        }
     }
 
     /**
-     * Returns an iterator containing the names of all the non-empty cells in this Spreadsheet
+     * Returns an Iterable containing the names of all the non-empty cells in
+     * this Spreadsheet
      */
     @Override
     public Iterable<String> getNamesOfAllNonemptyCells()
@@ -232,16 +245,16 @@ public class Spreadsheet extends AbstractSpreadsheet
         HashSet<String> copyOfNames = new HashSet<String>();
         for (String cellName : cells.keySet())
         {
-                copyOfNames.add(cellName);
+            copyOfNames.add(cellName);
         }
         return copyOfNames;
     }
 
     /**
      * If name is null or invalid, throws an InvalidNameException.
- *    
- * Otherwise, returns the contents (as opposed to the value) of the named cell.  The return
- * value should be either a string, a double, or a Formula.
+     *
+     * Otherwise, returns the contents (as opposed to the value) of the named
+     * cell. The return value should be either a string, a double, or a Formula.
      */
     @Override
     public Object getCellContents(String name) throws InvalidNameException
@@ -252,40 +265,44 @@ public class Spreadsheet extends AbstractSpreadsheet
         cellNameValidator(normalName);
 
         if (cells.containsKey(normalName))
-                return cells.get(normalName).getCellContents();
+        {
+            return cells.get(normalName).getCellContents();
+        }
         else
-                return "";
+        {
+            return "";
+        }
     }
 
     /**
      * If content is null, throws an IllegalArgumentException.
-     * 
+     *
      * Otherwise, if name is null or invalid, throws an InvalidNameException.
-     * 
+     *
      * Otherwise, if content parses as a double, the contents of the named cell
      * becomes that double.
-     * 
-     * Otherwise, if content begins with the character '=', an attempt is made to
-     * parse the remainder of content into a Formula f using the Formula
+     *
+     * Otherwise, if content begins with the character '=', an attempt is made
+     * to parse the remainder of content into a Formula f using the Formula
      * constructor. There are then three possibilities:
-     * 
+     *
      * (1) If the remainder of content cannot be parsed into a Formula, a
      * SpreadsheetUtilities.FormulaFormatException is thrown.
-     * 
-     * (2) Otherwise, if changing the contents of the named cell to be f would cause
-     * a circular dependency, a CircularException is thrown.
-     * 
+     *
+     * (2) Otherwise, if changing the contents of the named cell to be f would
+     * cause a circular dependency, a CircularException is thrown.
+     *
      * (3) Otherwise, the contents of the named cell becomes f.
-     * 
+     *
      * Otherwise, the contents of the named cell becomes content.
-     * 
-     * If an exception is not thrown, the method returns a set consisting of name
-     * plus the names of all other cells whose value depends, directly or
+     *
+     * If an exception is not thrown, the method returns a set consisting of
+     * name plus the names of all other cells whose value depends, directly or
      * indirectly, on the named cell.
-     * 
-     * For example, if name is A1, B1 contains A1*2, and C1 contains B1+A1, the set
-     * {A1, B1, C1} is returned.
-     * 
+     *
+     * For example, if name is A1, B1 contains A1*2, and C1 contains B1+A1, the
+     * set {A1, B1, C1} is returned.
+     *
      * @throws InvalidNameException
      * @throws CircularException
      */
@@ -293,24 +310,25 @@ public class Spreadsheet extends AbstractSpreadsheet
     public Set<String> setContentsOfCell(String name, String content) throws InvalidNameException, CircularException
     {
         if (content == null)
-                throw new IllegalArgumentException();
+        {
+            throw new IllegalArgumentException();
+        }
 
         String normalName = safelyNormalize(name);
         cellNameValidator(name);
 
         if (Formula.ExtensionMethods.isDoubleString(content))
         {
-                double doubleContent = Double.parseDouble(content);
-                return setCellContents(normalName, doubleContent);
+            double doubleContent = Double.parseDouble(content);
+            return setCellContents(normalName, doubleContent);
         }
 
         if (content.length() > 0 && content.charAt(0) == '=')
         {
-                String formulaContent = content.length() > 1 ? content.substring(1) : "";
-                Formula formula = new Formula(formulaContent, super.getNormalize(), super.getIsValid());
-                return setCellContents(normalName, formula);
+            String formulaContent = content.length() > 1 ? content.substring(1) : "";
+            Formula formula = new Formula(formulaContent, super.getNormalize(), super.getIsValid());
+            return setCellContents(normalName, formula);
         }
-
 
         return setCellContents(normalName, content);
 
@@ -318,19 +336,19 @@ public class Spreadsheet extends AbstractSpreadsheet
 
     /**
      * If name is null or invalid, throws an InvalidNameException.
- *    
- * Otherwise, the contents of the named cell becomes text.  The method returns a
- * set consisting of name plus the names of all other cells whose value depends, 
- * directly or indirectly, on the named cell.
- *    
- * For example, if name is A1, B1 contains A1*2, and C1 contains B1+A1, the
- * set {A1, B1, C1} is returned.
+     *
+     * Otherwise, the contents of the named cell becomes text. The method
+     * returns a set consisting of name plus the names of all other cells whose
+     * value depends, directly or indirectly, on the named cell.
+     *
+     * For example, if name is A1, B1 contains A1*2, and C1 contains B1+A1, the
+     * set {A1, B1, C1} is returned.
      */
     @Override
     protected Set<String> setCellContents(String name, String text) throws InvalidNameException, CircularException
     {
         cellNameValidator(name);
-        setChanged(true);           
+        setChanged(true);
 
         Cell cell = new Cell(text);
         addCellToHashMap(name, cell);
@@ -347,25 +365,27 @@ public class Spreadsheet extends AbstractSpreadsheet
         return hashSetifyIterable(recalcCells);
     }
 
-
     /**
- * If name is null or invalid, throws an InvalidNameException.
- * 
- * Otherwise, if changing the contents of the named cell to be the formula would cause a 
- * circular dependency, throws a CircularException.  (No change is made to the spreadsheet.)
- * 
- * Otherwise, the contents of the named cell becomes formula.  The method returns a
- * Set consisting of name plus the names of all other cells whose value depends,
- * directly or indirectly, on the named cell.
- * 
- * For example, if name is A1, B1 contains A1*2, and C1 contains B1+A1, the
- * set {A1, B1, C1} is returned.       
+     * If name is null or invalid, throws an InvalidNameException.
+     *
+     * Otherwise, if changing the contents of the named cell to be the formula
+     * would cause a circular dependency, throws a CircularException. (No change
+     * is made to the spreadsheet.)
+     *
+     * Otherwise, the contents of the named cell becomes formula. The method
+     * returns a Set consisting of name plus the names of all other cells whose
+     * value depends, directly or indirectly, on the named cell.
+     *
+     * For example, if name is A1, B1 contains A1*2, and C1 contains B1+A1, the
+     * set {A1, B1, C1} is returned.
      */
     @Override
     protected Set<String> setCellContents(String name, Formula formula) throws InvalidNameException, CircularException
     {
         if (name == null)
-                throw new InvalidNameException("formula cannot be null");
+        {
+            throw new InvalidNameException("formula cannot be null");
+        }
 
         cellNameValidator(name);
         checkCircularDependency(name, formula);
@@ -381,16 +401,17 @@ public class Spreadsheet extends AbstractSpreadsheet
         return hashSetifyIterable(recalcCells);
 
     }
-    /*
- * If name is null or invalid, throws an InvalidNameException.
- * 
- * Otherwise, the contents of the named cell becomes number.  The method returns a
- * set consisting of name plus the names of all other cells whose value depends, 
- * directly or indirectly, on the named cell.
- * 
- * For example, if name is A1, B1 contains A1*2, and C1 contains B1+A1, the
- * set {A1, B1, C1} is returned.
- * */
+
+    /**
+     * If name is null or invalid, throws an InvalidNameException.
+     *
+     * Otherwise, the contents of the named cell becomes number. The method
+     * returns a set consisting of name plus the names of all other cells whose
+     * value depends, directly or indirectly, on the named cell.
+     *
+     * For example, if name is A1, B1 contains A1*2, and C1 contains B1+A1, the
+     * set {A1, B1, C1} is returned.
+     */
     @Override
     protected Set<String> setCellContents(String name, double number) throws InvalidNameException, CircularException
     {
@@ -409,22 +430,19 @@ public class Spreadsheet extends AbstractSpreadsheet
     }
 
     /**
-     * @formatter:off
-     * If name is null, throws an IllegalArgumentException.
-     * 
-     * Otherwise, if name isn't a valid cell name, throws an InvalidNameException.
-     * 
-     * Otherwise, returns an enumeration, without duplicates, of the names of all
-     * cells whose values depend directly on the value of the named cell. In other
-     * words, returns an enumeration, without duplicates, of the names of all cells
-     * that contain formulas containing name.
-     * 
-     * For example, suppose that 
-     * 	A1 contains 3 
-     * 	B1 contains the formula A1 * A1 
-     * 	C1 contains the formula B1 + A1 
-     * 	D1 contains the formula B1 - C1 
-     * 
+     * @formatter:off If name is null, throws an IllegalArgumentException.
+     *
+     * Otherwise, if name isn't a valid cell name, throws an
+     * InvalidNameException.
+     *
+     * Otherwise, returns an iterable, without duplicates, of the names of all
+     * cells whose values depend directly on the value of the named cell. In
+     * other words, returns an iterable, without duplicates, of the names of all
+     * cells that contain formulas containing name.
+     *
+     * For example, suppose that A1 contains 3 B1 contains the formula A1 * A1
+     * C1 contains the formula B1 + A1 D1 contains the formula B1 - C1
+     *
      * The direct dependents of A1 are B1 and C1
      * @formatter:on
      */
@@ -432,7 +450,9 @@ public class Spreadsheet extends AbstractSpreadsheet
     protected Iterable<String> getDirectDependents(String name) throws InvalidNameException
     {
         if (name == null)
-                throw new IllegalArgumentException(name);
+        {
+            throw new IllegalArgumentException(name);
+        }
 
         String normalName = safelyNormalize(name);
         cellNameValidator(normalName);
@@ -447,30 +467,29 @@ public class Spreadsheet extends AbstractSpreadsheet
     private void recalculateCells(Iterable<String> recalcCells)
     {
         for (String cell : recalcCells)
+        {
             cells.get(cell).recalculateCellValue(defaultLookup);
+        }
 
     }
 
     /**
-     * Gets a cell's contents and returns a string version of the contents. If its
-     * contents is a double d, returns d.toString() If its contents is a string s,
-     * returns s. If its contents is a formula f, returns "=" prepended to
-     * f.toString()
+     * Gets a cell's contents and returns a string version of the contents. If
+     * its contents is a double d, returns d.toString() If its contents is a
+     * string s, returns s. If its contents is a formula f, returns "="
+     * prepended to f.toString()
      */
     private String getCellContentsString(String cell)
     {
         Cell c = cells.get(cell);
 
-        switch (c.getType())
+        if (c.getType() == FORMULA_TYPE)
         {
-            case DOUBLE_TYPE:
-                    Double d = (Double) cells.get(cell).getCellContents();
-                    return d.toString();
-            case STRING_TYPE:
-                    return (String) cells.get(cell).getCellContents();
-            default:
-                    Formula f = (Formula) cells.get(cell).getCellContents();
-                    return "=" + f.toString();
+            return "=" + c.getCellContents().toString();
+        }
+        else
+        {
+            return c.getCellContents().toString();
         }
     }
 
@@ -479,28 +498,32 @@ public class Spreadsheet extends AbstractSpreadsheet
      */
     private String safelyNormalize(String name)
     {
-            if (name != null)
-                return getNormalize().normalize(name);
-
+        if (name == null)
+        {
             return null;
+        }
+
+        return getNormalize().normalize(name);
     }
 
     /**
-     * A function which returns true if name is a valid cell name and any additional
-     * restrictions imposed by the validator are met, else, returns false. Used to
-     * pass to formulas to validate their variable names
+     * A function which returns true if name is a valid cell name and any
+     * additional restrictions imposed by the validator are met, else, returns
+     * false. Used to pass to formulas to validate their variable names
      */
     private boolean validator(String name)
     {
         if (name == null)
+        {
             return false;
+        }
 
         return cellNamePattern.matcher(name).find() && getIsValid().isValid(name);
     }
 
     /**
-     * If name is null or invalid, throws an InvalidNameException. Used to validate
-     * cell names passed to the spreadsheet.
+     * If name is null or invalid, throws an InvalidNameException. Used to
+     * validate cell names passed to the spreadsheet.
      */
     private void cellNameValidator(String normalizedName) throws InvalidNameException
     {
@@ -513,14 +536,15 @@ public class Spreadsheet extends AbstractSpreadsheet
 
     /**
      * Updates dependencies then checks for circular dependencies.
-     * 
-     * If there is a circular dependency, ensures the spreadsheet is not changed and
-     * old state of dependencies is restored, then throws CircularDependency. Else
-     * returns a set consisting of name plus the names of all other cells whose
-     * value depends directly or indirectly on the cell name.
+     *
+     * If there is a circular dependency, ensures the spreadsheet is not changed
+     * and old state of dependencies is restored, then throws
+     * CircularDependency. Else returns a set consisting of name plus the names
+     * of all other cells whose value depends directly or indirectly on the cell
+     * name.
      */
     private Iterable<String> checkCircularDependency(String name, Formula formula)
-                    throws CircularException, InvalidNameException
+            throws CircularException, InvalidNameException
     {
         // preserve current state
         Iterable<String> oldDependencies = dependencies.getDependents(name);
@@ -540,8 +564,8 @@ public class Spreadsheet extends AbstractSpreadsheet
     }
 
     /**
-     * Removes named cell's dependents from the graph then removes it from cells per
-     * invariant
+     * Removes named cell's dependents from the graph then removes it from cells
+     * per invariant
      */
     private void emptyCell(String name)
     {
@@ -550,16 +574,16 @@ public class Spreadsheet extends AbstractSpreadsheet
     }
 
     /**
-     * Takes a cell name and the corresponding cell and adds it to the dictionary.
-     * If the cell is replacing a cell which had a formula in it, removes the cells
-     * dependents.
+     * Takes a cell name and the corresponding cell and adds it to the
+     * dictionary. If the cell is replacing a cell which had a formula in it,
+     * removes the cells dependents.
      */
     private void addCellToHashMap(String name, Cell cell)
     {
         // Do not want to overwrite new formula's dependents 
         //if this cell is a formula type
-        if (cells.containsKey(name) 
-                && cells.get(name).getType() == CellType.FORMULA_TYPE 
+        if (cells.containsKey(name)
+                && cells.get(name).getType() == CellType.FORMULA_TYPE
                 && cell.getType() != CellType.FORMULA_TYPE)
         {
             dependencies.replaceDependents(name, new ArrayList<String>());
@@ -575,17 +599,20 @@ public class Spreadsheet extends AbstractSpreadsheet
     private HashSet<String> hashSetifyIterable(Iterable<String> iterable)
     {
         if (iterable instanceof HashSet)
-                    return (HashSet<String>) iterable;
+        {
+            return (HashSet<String>) iterable;
+        }
 
         if (iterable instanceof Collection)
-                return new HashSet<String>((Collection<String>) iterable);
+        {
+            return new HashSet<String>((Collection<String>) iterable);
+        }
 
         HashSet<String> set = new HashSet<String>();
         for (String s : iterable)
         {
-                set.add(s);
+            set.add(s);
         }
-
 
         return set;
 
@@ -593,10 +620,11 @@ public class Spreadsheet extends AbstractSpreadsheet
 
     /**
      * Attempts to read in the Spreadsheet saved at filename. Upon successful
-     * parsing, returns the handler that was used to read in the spreadsheet which
-     * will contain a method for getting a HashMap of every cell and cell contents
-     * of the file, and a method for getting the version of the spreadsheet.
-     * 
+     * parsing, returns the handler that was used to read in the spreadsheet
+     * which will contain a method for getting a HashMap of every cell and cell
+     * contents of the file, and a method for getting the version of the
+     * spreadsheet.
+     *
      * If parsing is unsuccessful will throw SpreadsheetReadWriteException
      */
     private SpreadsheetDocumentHandler parseSpreadsheetXML(String filename) throws SpreadsheetReadWriteException
@@ -629,28 +657,29 @@ public class Spreadsheet extends AbstractSpreadsheet
     {
 
         /**
-         * If the value of variable can be mapped to a double, returns that double else
-         * throws an exception.
+         * If the value of variable can be mapped to a double, returns that
+         * double else throws an exception.
          */
         @Override
         public double lookup(String variable)
         {
             try
             {
-                    Object value = getCellValue(variable);
-                    if (value instanceof Double)
-                            return (Double) value;
+                Object value = getCellValue(variable);
+                if (value instanceof Double)
+                {
+                    return (Double) value;
+                }
 
-                    throw new IllegalArgumentException("Could not look up the value of variable" + variable);
+                throw new IllegalArgumentException("Could not look up the value of variable" + variable);
 
             }
             catch (InvalidNameException e)
             {
-                    throw new IllegalArgumentException("Could not look up the value of variable" + variable);
+                throw new IllegalArgumentException("Could not look up the value of variable" + variable);
             }
         }
 
     }
-        
-        
+
 }

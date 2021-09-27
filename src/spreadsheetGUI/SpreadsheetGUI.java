@@ -1,21 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package spreadsheetGUI;
 
 import java.awt.event.ActionListener;
 import java.awt.event.WindowListener;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.UIManager;
 
-/**
- *
- * @author aaron
- */
+
 public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWindow
 {
 
@@ -25,7 +15,9 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
     public SpreadsheetGUI()
     {
         initComponents();
-
+        
+        // keep around a reference to a JFileChooser so location of selected 
+        // files will stick around
         fileChooser = new JFileChooser();
 
     }
@@ -233,48 +225,72 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
 
     private JFileChooser fileChooser;
 
+    /**
+     * Gets the spreadsheet panel component in this window
+     */
     @Override
     public SpreadsheetPanel getSpreadsheetPanel()
     {
         return spreadsheetPanel;
     }
 
+    /**
+     * Sets the text of the current cell text box
+     */
     @Override
     public void setCurrentCellText(String text)
     {
         currentCellTextField.setText(text);
     }
 
+    /**
+     * Sets the text of the value test box
+     */
     @Override
     public void setValueBoxText(String text)
     {
         valueTextField.setText(text);
     }
 
+    /**
+     * Gets the text of the contents text box
+     */
     @Override
     public String getContentsBoxText()
     {
         return contentsTextField.getText();
     }
 
+    /**
+     * Sets the text of the contents text box
+     */
     @Override
     public void setContentsBoxText(String text)
     {
         contentsTextField.setText(text);
     }
 
+    /**
+     * Sets the text of this window
+     */
     @Override
     public String getWindowText()
     {
         return getTitle();
     }
 
+    /**
+     * Sets the text of this window
+     */
     @Override
     public void setWindowText(String text)
     {
         setTitle(text);
     }
 
+    /**
+     * Shows an error message box corresponding message
+     */
     @Override
     public void showErrorMessageBox(String message)
     {
@@ -282,13 +298,20 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
                 "Spreadsheet Error", javax.swing.JOptionPane.ERROR_MESSAGE);
     }
 
+    /**
+     * Shows a message box which can be canceled with a corresponding message
+     * and caption
+     */
     @Override
-    public int showOkayCancelMessageBox(String message, String caption)
+    public int showYesNoCancelMessageBox(String message, String caption)
     {
         return JOptionPane.showConfirmDialog(this, message, caption, 
                 JOptionPane.YES_NO_CANCEL_OPTION);
     }
     
+    /**
+     * Shows a generic message box with the corresponding message and caption
+     */
     @Override
     public void showOkayMessageBox(String message, String caption)
     {
@@ -302,29 +325,45 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
         spreadsheetProgramDialog.setTitle(caption);
         spreadsheetProgramDialog.setSize(spreadsheetProgramDialog.getPreferredSize().width, 
                 (int)(spreadsheetProgramDialog.getPreferredSize().width * 0.66));
+        dialogScrollPane.getVerticalScrollBar().setValue(0);
+        dialogScrollPane.getVerticalScrollBar().setUnitIncrement(10);
         spreadsheetProgramDialog.setLocationRelativeTo(this);
         spreadsheetProgramDialog.setAlwaysOnTop(rootPaneCheckingEnabled);
-        spreadsheetProgramDialog.setVisible(rootPaneCheckingEnabled);   
+        spreadsheetProgramDialog.setVisible(rootPaneCheckingEnabled);  
+        
     }
 
+    /**
+     * Sets the cell in the SpreadsheetPanel located at row, col to the String
+     * text
+     */
     @Override
     public void setCellText(int row, int col, String text)
     {
         spreadsheetPanel.setValue(row, col, text);
     }
 
+    /**
+     * Gets the zero indexed row of the currently selected cell
+     */
     @Override
     public int getCellSelectionRow()
     {
         return spreadsheetPanel.getSelectionRow();
     }
 
+    /**
+     * Gets the zero indexed column of the currently selected cell
+     */
     @Override
     public int getCellSelectionColumn()
     {
         return spreadsheetPanel.getSelectionColumn();
     }
 
+    /**
+     * Closes this window
+     */
     @Override
     public void closeWindow()
     {
@@ -332,36 +371,54 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
         System.exit(0);
     }
 
+    /**
+     * Adds ActionListener l to the contents box
+     */
     @Override
     public void addActionListenerToContentsBox(ActionListener l)
     {
         contentsTextField.addActionListener(l);
     }
 
+    /**
+     * Sets the focus to the contents text box
+     */
     @Override
     public void setFocusToContentBox()
     {
         contentsTextField.requestFocus();
     }
 
+    /**
+     * Adds WindowListener l to the FormClosing event
+     */
     @Override
     public void addFormClosingAction(WindowListener l)
     {
         this.addWindowListener(l);
     }
 
+    /**
+     * Sets the default cell as selection in the spreadsheet panel
+     */
     @Override
     public void setCellSelectionToDefault()
     {
         spreadsheetPanel.setSelection(0, 0);
     }
 
+    /**
+     * Adds a listener to the enterContentsButton
+     */
     @Override
     public void addActionListenerToEnterContentsButton(ActionListener l)
     {
         contentsButton.addActionListener(l);
     }
 
+    /**
+     * Shows an open file dialogue box and returns the file selection
+     */
     @Override
     public String showOpenFileDialogue()
     {
@@ -376,6 +433,9 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
         }
     }
 
+    /**
+     * Shows an close file dialogue box and returns the file selection
+     */
     @Override
     public String showSaveFileDialogue()
     {
@@ -390,50 +450,69 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
         }
     }
 
+    /**
+     * Adds a listener to the Open menu item
+     */
     @Override
     public void addActionListenerToOpenMenuItem(ActionListener l)
     {
         openMenuItem.addActionListener(l);
     }
 
+    /**
+     * Adds a listener to the Save menu item
+     */
     @Override
     public void addActionListenerToSaveMenuItem(ActionListener l)
     {
         saveMenuItem.addActionListener(l);
     }
 
+    /**
+     * Adds a listener to the New menu item
+     */
     @Override
     public void addActionListenerToNewMenuItem(ActionListener l)
     {
         newMenuItem.addActionListener(l);
     }
     
+    /**
+     * Adds a listener to the Close menu item l
+     */
     @Override
     public void addActionListenerToCloseMenuItem(ActionListener l)
     {
         closeMenuItem.addActionListener(l);
     }
     
+    /**
+     * Adds a listener to the How To Use menu item l
+     */
      @Override
     public void addActionListenerToHowToUseMenuItem(ActionListener l)
     {
         howToUseMenuItem.addActionListener(l);
     }
 
+    /**
+     * Adds a listener to the About menu item l
+     */
     @Override
     public void addActionListenerToAboutMenuItem(ActionListener l)
     {
         aboutMenuItem.addActionListener(l);
     }
 
+    /**
+     * Returns the file chooser used by this window.
+     *
+     * Allows controller to control settings offered by file chooser
+     */
     @Override
     public JFileChooser getFileChooser()
     {
         return fileChooser;
     }
-
-   
-
-    
 
 }

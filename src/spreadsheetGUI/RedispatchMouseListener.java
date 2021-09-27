@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package spreadsheetGUI;
 
 import java.awt.Component;
@@ -11,8 +6,7 @@ import java.awt.event.MouseListener;
 import javax.swing.SwingUtilities;
 
 /**
- *
- * @author aaron
+ * A mouse listener that redispatches mouse events to parent swing containers
  */
 public class RedispatchMouseListener implements MouseListener
 {

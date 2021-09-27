@@ -1,25 +1,20 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package spreadsheetControl;
 
 import ssUtils.Normalizer;
 
 /**
- *
- * @author aaron
+ * Normalizes cell names for Spreadsheet objects
  */
 public class CellNormalizer implements Normalizer
 {
 
+    /**
+     * Returns s converted to uppercase
+     */
     @Override
     public String normalize(String s)
     {
         return s.toUpperCase();
     }
 
-    
-    
 }

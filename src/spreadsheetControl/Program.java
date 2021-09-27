@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package spreadsheetControl;
 
 import javax.swing.UIManager;
@@ -10,18 +5,17 @@ import spreadsheetGUI.ISpreadsheetWindow;
 import spreadsheetGUI.SpreadsheetGUI;
 
 /**
- *
- * @author aaron
+ * Entry point for this program
+ * 
+ * Displays the GUI and attaches it to the controller
  */
 public class Program
 {
-    /**
-     * @param args the command line arguments
-     */
+    
     public static void main(String args[])
     {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* Set the Nimbus look and feel  to system default */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
@@ -55,14 +49,13 @@ public class Program
         }
         //</editor-fold>
 
-        /* Create and display the form */
+        /* Create and display the GUI and attach it to controller */
         java.awt.EventQueue.invokeLater(new Runnable()
         {
             public void run()
             {
                 SpreadsheetGUI view = new SpreadsheetGUI();
-                ISpreadsheetWindow viewInterface = (ISpreadsheetWindow)view;
-                SpreadsheetController spreadsheetController = new SpreadsheetController(view);
+                SpreadsheetController spreadsheetController = new SpreadsheetController((ISpreadsheetWindow)view);
                 view.setVisible(true);
             }
         });

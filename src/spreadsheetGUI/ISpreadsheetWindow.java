@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package spreadsheetGUI;
 
 import java.awt.event.ActionListener;
@@ -56,8 +51,8 @@ public interface ISpreadsheetWindow
      * Shows a message box which can be canceled with a corresponding message
      * and caption
      */
-    public int showOkayCancelMessageBox(String message, String caption);
-    
+    public int showYesNoCancelMessageBox(String message, String caption);
+
     /**
      * Shows a generic message box with the corresponding message and caption
      */
@@ -70,22 +65,22 @@ public interface ISpreadsheetWindow
     public void setCellText(int row, int col, String text);
 
     /**
-     * Gets the zero indexed row of the currently selected cell 
+     * Gets the zero indexed row of the currently selected cell
      */
     public int getCellSelectionRow();
 
     /**
-     * Gets the zero indexed column of the currently selected cell 
+     * Gets the zero indexed column of the currently selected cell
      */
     public int getCellSelectionColumn();
 
     /**
-     * Allows controller to close this window
+     * Closes this window
      */
     public void closeWindow();
-    
+
     /**
-     * Sets the default accept button as contentsButton
+     * Adds ActionListener l to the contents box
      */
     public void addActionListenerToContentsBox(ActionListener l);
 
@@ -95,7 +90,7 @@ public interface ISpreadsheetWindow
     public void setFocusToContentBox();
 
     /**
-     * Allows the controller to add an action to the FormClosing event
+     * Adds WindowListener l to the FormClosing event
      */
     public void addFormClosingAction(WindowListener l);
 
@@ -103,59 +98,57 @@ public interface ISpreadsheetWindow
      * Sets the default cell as selection in the spreadsheet panel
      */
     public void setCellSelectionToDefault();
-    
+
     /**
      * Adds a listener to the enterContentsButton
      */
     public void addActionListenerToEnterContentsButton(ActionListener l);
-    
+
     /**
      * Shows an open file dialogue box and returns the file selection
      */
     public String showOpenFileDialogue();
-    
+
     /**
      * Shows an close file dialogue box and returns the file selection
      */
     public String showSaveFileDialogue();
-    
+
     /**
      * Adds a listener to the Open menu item
      */
     public void addActionListenerToOpenMenuItem(ActionListener l);
-    
+
     /**
      * Adds a listener to the Save menu item
      */
     public void addActionListenerToSaveMenuItem(ActionListener l);
-    
-     /**
+
+    /**
      * Adds a listener to the New menu item
      */
     public void addActionListenerToNewMenuItem(ActionListener l);
-    
+
     /**
-     * Adds a listener to the Close menu item l 
+     * Adds a listener to the Close menu item l
      */
     public void addActionListenerToCloseMenuItem(ActionListener l);
-    
+
     /**
-     * Adds a listener to the How To Use menu item l 
+     * Adds a listener to the How To Use menu item l
      */
     public void addActionListenerToHowToUseMenuItem(ActionListener l);
-    
+
     /**
-     * Adds a listener to the About menu item l 
+     * Adds a listener to the About menu item l
      */
     public void addActionListenerToAboutMenuItem(ActionListener l);
-    
+
     /**
-     * Returns the file chooser used by this window. 
-     * 
+     * Returns the file chooser used by this window.
+     *
      * Allows controller to control settings offered by file chooser
      */
     public JFileChooser getFileChooser();
-    
-    
-    
+
 }

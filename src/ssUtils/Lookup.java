@@ -6,9 +6,10 @@ package ssUtils;
  */
 public interface Lookup
 {
-	/**
-	 * Lookup takes a string, variable and returns the value of that variable if one
-	 * exists.
-	 */
-	public double lookup(String variable);
+
+    /**
+     * Lookup takes a string, variable and returns the value of that variable if
+     * one exists.
+     */
+    public double lookup(String variable);
 }

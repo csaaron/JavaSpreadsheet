@@ -35,11 +35,11 @@ public class DependancyGraph
 
     // This graph represented as an adjacency list. If an element has no
     // dependents the key for that element will not be in this dictionary.
-    private HashMap<String, HashSet<String>> list;
+    private HashMap<String, HashSet<String>> dependentsAdjacencyList;
 
     // A reverse graph of dependents represented as an adjacency list.
     // If an element has no dependees they key will not be in the dictionary.
-    private HashMap<String, HashSet<String>> dependees;
+    private HashMap<String, HashSet<String>> dependeesAdjacencyList;
 
     // Holds the size of this DependencyGraph.
     private int size;
@@ -49,8 +49,8 @@ public class DependancyGraph
      */
     public DependancyGraph()
     {
-        list = new HashMap<String, HashSet<String>>();
-        dependees = new HashMap<String, HashSet<String>>();
+        dependentsAdjacencyList = new HashMap<String, HashSet<String>>();
+        dependeesAdjacencyList = new HashMap<String, HashSet<String>>();
         size = 0;
     }
 
@@ -67,9 +67,9 @@ public class DependancyGraph
      */
     public int dependeeSize(String s)
     {
-        if (dependees.containsKey(s))
+        if (dependeesAdjacencyList.containsKey(s))
         {
-            return dependees.get(s).size();
+            return dependeesAdjacencyList.get(s).size();
         }
         else
         {
@@ -82,7 +82,7 @@ public class DependancyGraph
      */
     public boolean hasDependents(String s)
     {
-        return list.containsKey(s);
+        return dependentsAdjacencyList.containsKey(s);
     }
 
     /**
@@ -90,7 +90,7 @@ public class DependancyGraph
      */
     public boolean hasDependees(String s)
     {
-        return dependees.containsKey(s);
+        return dependeesAdjacencyList.containsKey(s);
     }
 
     /**
@@ -101,7 +101,7 @@ public class DependancyGraph
         if (hasDependents(s))
         {
             // want copy of set to avoid changing underlying structure
-            return copyIterableToHashSet(list.get(s));
+            return copyIterableToHashSet(dependentsAdjacencyList.get(s));
         }
         else
         {
@@ -117,7 +117,7 @@ public class DependancyGraph
         if (hasDependees(s))
         {
             // want copy of set to avoid changing underlying structure
-            return copyIterableToHashSet(dependees.get(s));
+            return copyIterableToHashSet(dependeesAdjacencyList.get(s));
         }
         else
         {
@@ -131,8 +131,8 @@ public class DependancyGraph
     public void addDependency(String s, String t)
     {
         boolean added;
-        added = addKeyAndHashValue(list, s, t);
-        added = addKeyAndHashValue(dependees, t, s) || added;
+        added = addKeyAndHashValue(dependentsAdjacencyList, s, t);
+        added = addKeyAndHashValue(dependeesAdjacencyList, t, s) || added;
 
         if (added)
         {
@@ -146,8 +146,8 @@ public class DependancyGraph
     public void removeDependency(String s, String t)
     {
         boolean removed;
-        removed = removeKeyAndHashValue(list, s, t);
-        removed = removeKeyAndHashValue(dependees, t, s) || removed;
+        removed = removeKeyAndHashValue(dependentsAdjacencyList, s, t);
+        removed = removeKeyAndHashValue(dependeesAdjacencyList, t, s) || removed;
 
         if (removed)
         {
@@ -161,7 +161,8 @@ public class DependancyGraph
      */
     public void replaceDependents(String s, Iterable<String> newDependents)
     {
-        // getDependents(s) returns a copy making this safe
+        // getDependents(s) returns a copy making 
+        // changing structure of graphs safe
         Iterable<String> oldDependents = getDependents(s);
         for (String r : oldDependents)
         {
@@ -181,7 +182,8 @@ public class DependancyGraph
     public void replaceDependees(String s, Iterable<String> newDependees)
     {
 
-        // getDependents(s) returns a copy making this safe
+        // getDependents(s) returns a copy making 
+        // changing structure of graphs safe
         Iterable<String> oldDependees = getDependees(s);
         for (String r : oldDependees)
         {

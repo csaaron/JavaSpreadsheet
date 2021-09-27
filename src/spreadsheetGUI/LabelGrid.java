@@ -1,25 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package spreadsheetGUI;
 
 import java.awt.Color;
-import java.awt.Component;
+
 import java.awt.Dimension;
 import java.awt.ItemSelectable;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.EventListener;
 import javax.swing.JLabel;
-import javax.swing.SwingUtilities;
 
 /**
  * A JPanel consisting of a grid of JLabels
@@ -27,7 +17,9 @@ import javax.swing.SwingUtilities;
 public class LabelGrid extends javax.swing.JPanel implements ItemSelectable
 {
 
-    private static final int COLUMN_WIDTH = 80;
+    // Used to create a JLabel to base sizing off of. 
+    // Need to base sizing off of system font defaults
+    private static final String DEFAULT_SIZE = "0000000000";
 
     private int labelWidth;
     private int labelHeight;
@@ -45,7 +37,8 @@ public class LabelGrid extends javax.swing.JPanel implements ItemSelectable
      */
     LabelGrid()
     {
-        this(99, 26, COLUMN_WIDTH, new JLabel("example").getPreferredSize().height);
+        this(99, 26, new JLabel(DEFAULT_SIZE).getPreferredSize().width,
+                new JLabel(DEFAULT_SIZE).getPreferredSize().height);
     }
 
     /**
@@ -54,7 +47,8 @@ public class LabelGrid extends javax.swing.JPanel implements ItemSelectable
      */
     LabelGrid(int rows, int columns)
     {
-        this(rows, columns, COLUMN_WIDTH, new JLabel("example").getPreferredSize().height);
+        this(rows, columns, new JLabel(DEFAULT_SIZE).getPreferredSize().width,
+                new JLabel(DEFAULT_SIZE).getPreferredSize().height);
     }
 
     /**
@@ -112,7 +106,6 @@ public class LabelGrid extends javax.swing.JPanel implements ItemSelectable
                 GridLabel label = new GridLabel(row, column);
                 label.setForeground(Color.BLACK);
                 label.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-                // label.setHorizontalAlignment(SwingConstants.CENTER);
 
                 labels[row][column] = label;
                 add(label);
@@ -167,10 +160,10 @@ public class LabelGrid extends javax.swing.JPanel implements ItemSelectable
         {
             return false;
         }
-        
+
         //fire event stating old selection was deselected
         fireItemEvent(labels[selectedRow][selectedColumn], false);
-        
+
         //unset old selection by setting default border
         labels[selectedRow][selectedColumn].setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
@@ -184,13 +177,13 @@ public class LabelGrid extends javax.swing.JPanel implements ItemSelectable
 
         //fire event stating new selection was selected
         fireItemEvent(labels[selectedRow][selectedColumn], true);
-        
+
         return true;
     }
 
     /**
      * If the JLabel provided exists on the grid of this LabelGrid, marks it as
-     * the selected and returns true, else returns false
+     * selected and returns true, else returns false
      */
     public boolean setSelection(JLabel label)
     {
@@ -221,6 +214,9 @@ public class LabelGrid extends javax.swing.JPanel implements ItemSelectable
         return true;
     }
 
+    /**
+     * Returns the currently selected Label in this LabelGrid
+     */
     @Override
     public Object[] getSelectedObjects()
     {
@@ -230,24 +226,37 @@ public class LabelGrid extends javax.swing.JPanel implements ItemSelectable
         };
     }
 
+    /**
+     * Adds a listener to receive item events when the state of an item is
+     * changed by the user. Item events are not sent when an item's state is set
+     * programmatically. If l is null, no exception is thrown and no action is
+     * performed.
+     *
+     * @param arg0 the listener to receive events
+     */
     @Override
     public void addItemListener(ItemListener arg0)
     {
         listenerList.add(ItemListener.class, arg0);
     }
 
+    /**
+     * Removes an item listener. If l is null, no exception is thrown and no
+     * action is performed.
+     *
+     * @param arg0 the listener being removed
+     */
     @Override
     public void removeItemListener(ItemListener arg0)
     {
         listenerList.remove(ItemListener.class, arg0);
     }
 
-
     /**
      * Notifies all ItemListeners registered with this component that the
-     * parameter item has been selected or deselected. Selected is true if selected,
-     * false if it was deselected.
-     * 
+     * parameter item has been selected or deselected. Selected is true if
+     * selected, false if it was deselected.
+     *
      * @param item the object that was selected
      * @param selected true if item was selected, false if it was deselected
      */
@@ -268,33 +277,52 @@ public class LabelGrid extends javax.swing.JPanel implements ItemSelectable
         }
     }
 
+    /**
+     * GridLabel extends JLabel to include information about its position in
+     * this grid and and to fire events when clicked
+     */
     private class GridLabel extends JLabel implements MouseListener
     {
 
         private int row;
         private int column;
 
+        /**
+         * Creates a GridLabel located at row and column
+         */
         public GridLabel(int row, int column)
         {
             super();
             this.row = row;
             this.column = column;
+
             addMouseListener(this);
+            // pass the mouse click event up to a parent which may be listening 
+            // for it
             addMouseListener(new RedispatchMouseListener());
-            
+
         }
 
+        /**
+         * returns this label's row
+         */
         public int getRow()
         {
             return row;
         }
 
+        /**
+         * returns this label's column
+         */
         public int getColumn()
         {
 
             return column;
         }
 
+        /**
+         * Sets this label as selected when clicked
+         */
         @Override
         public void mouseClicked(MouseEvent e)
         {
@@ -327,7 +355,7 @@ public class LabelGrid extends javax.swing.JPanel implements ItemSelectable
 
         public void actionPerformed(ActionEvent e)
         {
-
+            return;
         }
 
     }

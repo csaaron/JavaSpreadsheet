@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package spreadsheetGUI;
 
 import java.awt.Dimension;
@@ -17,8 +12,7 @@ import javax.swing.SwingConstants;
 public class GridColumnLegend extends javax.swing.JPanel
 {
 
-    private static final int COLUMN_WIDTH = 80;
-    private static final int ROW_NUMBER_WIDTH = 20;
+    private static final String DEFAULT_SIZE = "0000000000";
 
     private JLabel[] labels;
     private int size;
@@ -37,11 +31,11 @@ public class GridColumnLegend extends javax.swing.JPanel
     {
         super();
 
-        JLabel example = new JLabel("example");
+        JLabel example = new JLabel(DEFAULT_SIZE);
 
         size = (int) 'Z' - 'A' + 1;
         labels = new JLabel[size];
-        labelWidth = COLUMN_WIDTH;
+        labelWidth = example.getPreferredSize().width;
         labelHeight = example.getPreferredSize().height;
         selection = 0;
 
@@ -53,8 +47,34 @@ public class GridColumnLegend extends javax.swing.JPanel
         }
 
         initComponents(legends);
+    }
 
-        // setSelection(selection);
+    /**
+     * Creates column legends for a ScrollableSpreadsheetPanel using the default
+     * legends and the provided label width and height
+     *
+     * Default legend contains 26 legends labeled A - Z
+     */
+    public GridColumnLegend(int width, int height)
+    {
+        super();
+
+        JLabel example = new JLabel(DEFAULT_SIZE);
+
+        size = (int) 'Z' - 'A' + 1;
+        labels = new JLabel[size];
+        labelWidth = width;
+        labelHeight = height;
+        selection = 0;
+
+        String[] legends = new String[size];
+
+        for (int i = 0; i + 'A' < 'Z' + 1; i++)
+        {
+            legends[i] = String.valueOf((char) (i + 'A'));
+        }
+
+        initComponents(legends);
     }
 
     /**
@@ -65,17 +85,15 @@ public class GridColumnLegend extends javax.swing.JPanel
     {
         super();
 
-        JLabel example = new JLabel("example");
+        JLabel example = new JLabel(DEFAULT_SIZE);
 
         size = legends.length;
         labels = new JLabel[size];
-        labelWidth = COLUMN_WIDTH;
+        labelWidth = example.getPreferredSize().width;
         labelHeight = example.getPreferredSize().height;
         selection = 0;
 
         initComponents(legends);
-
-        // setSelection(selection);
     }
 
     /**
@@ -102,8 +120,6 @@ public class GridColumnLegend extends javax.swing.JPanel
         selection = 0;
 
         initComponents(legends);
-
-        // setSelection(selection);
     }
 
     /**
@@ -154,6 +170,10 @@ public class GridColumnLegend extends javax.swing.JPanel
         }
     }
 
+    /**
+     * Returns true if the zero indexed column exists in this legend, else
+     * returns false
+     */
     public boolean inRange(int column)
     {
         if (column >= 0 && column < size)
@@ -164,6 +184,9 @@ public class GridColumnLegend extends javax.swing.JPanel
         return false;
     }
 
+    /**
+     * Sets the zero indexed column legend as selected 
+     */
     public boolean setSelection(int column)
     {
         if (!inRange(column))
@@ -186,10 +209,14 @@ public class GridColumnLegend extends javax.swing.JPanel
         return true;
     }
 
+    /**
+     * Sets the text in the zero indexed column as bold if the boolean activate 
+     * is true else sets the font to the standard weight
+     */
     private void toggleBold(int column, boolean activate)
     {
         Font font = labels[column].getFont();
-        
+
         if (activate)
         {
             labels[column].setFont(font.deriveFont(font.getStyle() | Font.BOLD));

@@ -1,30 +1,27 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package spreadsheetControl;
 
 import java.util.regex.Pattern;
 
 /**
+ * Validates cell names for Spreadsheet objects
  *
- * @author aaron
+ * CellValidator will match all strings that begin with one letter of the
+ * alphabet followed by any number between 1-99
  */
-public class CellValidator implements ssUtils.IsValidFunctor
+public class CellValidator implements ssUtils.IsValid
 {
-    
+
     private Pattern cellNamePattern;
-    
+
     public CellValidator()
     {
-        cellNamePattern = Pattern.compile("^[a-zA-Z][1-9]\\d?$"); 
+        cellNamePattern = Pattern.compile("^[a-zA-Z][1-9]\\d?$");
     }
-    
+
     @Override
     public boolean isValid(String s)
     {
         return cellNamePattern.matcher(s).find();
     }
-    
+
 }
