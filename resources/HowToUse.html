@@ -6,14 +6,21 @@
                 padding-left: 15px;
                 padding-right: 15px;
             }
-            
+
             p {
                 width: 400px;
+            }
+            
+            ol {
+                width: 400px;
+            }
+            
+            li {
+                padding-top: 5px;
             }
 
             .category {
                 padding-top: 5px;
-                
             }
 
             .categoryItem {
@@ -30,6 +37,20 @@
                 padding-left: 20px;
                 padding-top: 5px;
             }
+            
+            .listExample {
+                padding-left: 20px;
+                padding-top: 5px;
+                font-family: monospace;
+            }
+
+            .checkmark {
+                color: #00ff00;
+            }
+            
+            .redx {
+                color: #ff0000;
+            }
 
         </style>
     </head>
@@ -40,7 +61,7 @@
 
         <div class="category">
             <h2>File:</h2> 
-            
+
             <div class="categoryItem"> 
                 <b>New:</b>
                 <span class="keyboardShortcuts">
@@ -95,7 +116,7 @@
 
         <div class="category">
             <h2>Help:</h2>
-            
+
             <div class="categoryItem"> 
                 <b>About:</b>
                 <div class="description">
@@ -117,10 +138,10 @@
             </div>
 
         </div>
-        
+
         <div class="category">
             <h2>Cell Properties:</h2>
-            
+
             <div class="categoryItem"> 
                 <b>Current Cell:</b>
                 <div class="description">
@@ -141,7 +162,7 @@
                     </p>
                 </div>
             </div>
-            
+
             <div class="categoryItem"> 
                 <b>Contents:</b>
                 <div class="description">
@@ -155,7 +176,7 @@
                     </p>
                 </div>
             </div>
-            
+
             <div class="categoryItem"> 
                 <b>Spreadsheet/ Grid:</b>
                 <div class="description">
@@ -166,6 +187,88 @@
                     </p>
                 </div>
             </div>
+
+        </div>
+
+        <div class="category">
+            <h2>Formulas:</h2>
+
+            <div class="categoryItem"> 
+                <b>About:</b>
+                <div class="description">
+                    <p>
+                        Formulas are written in standard infix notation using 
+                        standard precedence rules. The program will attempt to 
+                        interpret any text entered into the ‘Contents’ text 
+                        field that begin with the character ‘=’ as a formula.
+                    </p>
+                </div>
+            </div>
+
+            <div class="categoryItem"> 
+                <b>Allowed symbols:</b>
+                <div class="description">
+                    <p>
+                        The four types of allowed symbols in a formula are:
+                    </p>
+
+                    <ol>
+                        <li> 
+                            Non-negative numbers written using double-precision 
+                            floating-point syntax
+                            
+                            <div class='listExample'>
+                                0, 2, 3.14, 6E256
+                            </div>
+                        </li>
+
+                        <li> 
+                            Variables that consist of a letter followed by a 
+                            number between 1-99
+                            
+                            <div class='listExample'>
+                                A3, D9, B14, Z99
+                            </div>
+                        </li>
+
+                        <li> 
+                            Parentheses
+                            
+                            <div class='listExample'>
+                                (, )
+                            </div>
+                        </li>
+
+                        <li> 
+                            The four operator symbols
+                            
+                            <div class='listExample'>
+                                +, -, *, /
+                            </div>
+                        </li>
+                    </ol>
+
+
+                </div>
+            </div>
+
+            <div class="categoryItem"> 
+                <b>Limitations:</b>
+                <div class="description">
+                    <p>
+                        Formulas are not capable of handling negative numbers or
+                        performing implied multiplication 
+                    </p>
+                    
+                    <div class='listExample'>
+                        <span class='checkmark'>&#x2705;</span> =(0 - 3)*(2 + 8)
+                        <br>
+                        <span class='redx'>&#x274C;</span> =-3(2 + 8)
+                    </div>
+                </div>
+            </div>
+
+            
 
         </div>
 
