@@ -10,6 +10,8 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.JLabel;
+import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.helpers.AnnotationHelper;
+import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.helpers.MethodFilter;
 
 /**
  * A JPanel consisting of a grid of JLabels
@@ -25,7 +27,8 @@ public class LabelGrid extends javax.swing.JPanel implements ItemSelectable
     private int labelHeight;
     private int rowsSize;
     private int columnSize;
-
+    private float fontSize;
+            
     private GridLabel[][] labels;
 
     private int selectedRow;
@@ -37,8 +40,7 @@ public class LabelGrid extends javax.swing.JPanel implements ItemSelectable
      */
     LabelGrid()
     {
-        this(99, 26, new JLabel(DEFAULT_SIZE).getPreferredSize().width,
-                new JLabel(DEFAULT_SIZE).getPreferredSize().height);
+        this(99, 26, 16);
     }
 
     /**
@@ -47,15 +49,41 @@ public class LabelGrid extends javax.swing.JPanel implements ItemSelectable
      */
     LabelGrid(int rows, int columns)
     {
-        this(rows, columns, new JLabel(DEFAULT_SIZE).getPreferredSize().width,
-                new JLabel(DEFAULT_SIZE).getPreferredSize().height);
+        this(rows,columns, 16);
+    }
+    
+    /**
+     * Creates a grid of JLabels consisting of the specified number of rows and
+     * columns with the default width and height
+     */
+    LabelGrid(int rows, int columns, float fontSize)
+    {
+        super();
+        
+        JLabel label = new JLabel(DEFAULT_SIZE);
+        label.setFont(label.getFont().deriveFont(fontSize));
+        
+        labelWidth = label.getPreferredSize().width;
+        labelHeight = label.getPreferredSize().height;
+        rowsSize = rows;
+        columnSize = columns;
+        this.fontSize = fontSize;
+        
+        selectedRow = 0;
+        selectedColumn = 0;
+
+        labels = new GridLabel[rowsSize][columnSize];
+
+        initComponents();
+
+        setSelection(0, 0);
     }
 
     /**
      * Creates a grid of JLabels consisting of the specified number of rows and
      * columns consisting of labels with dimensions width and height
      */
-    LabelGrid(int rows, int columns, int width, int height)
+    LabelGrid(int rows, int columns, int width, int height, float fontSize)
     {
         super();
 
@@ -63,7 +91,8 @@ public class LabelGrid extends javax.swing.JPanel implements ItemSelectable
         labelHeight = height;
         rowsSize = rows;
         columnSize = columns;
-
+        this.fontSize = fontSize;
+        
         selectedRow = 0;
         selectedColumn = 0;
 
@@ -106,6 +135,7 @@ public class LabelGrid extends javax.swing.JPanel implements ItemSelectable
                 GridLabel label = new GridLabel(row, column);
                 label.setForeground(Color.BLACK);
                 label.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+                label.setFont(label.getFont().deriveFont(fontSize));
 
                 labels[row][column] = label;
                 add(label);

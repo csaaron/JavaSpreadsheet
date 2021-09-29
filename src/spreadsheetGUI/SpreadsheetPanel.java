@@ -26,15 +26,22 @@ public class SpreadsheetPanel extends javax.swing.JScrollPane implements ItemSel
     public SpreadsheetPanel()
     {
         super();
-
+        
         // base sizing off of label in order to account for system font sizes
-        JLabel example = new JLabel("0000000000");
+        float fontPt = new JLabel().getFont().getSize() + 3;
+        String labelStringWidth = "00000000000";
+        String html = "<html><span style='font-size:%fpt;'>%s</span></html>";
+        String formattedHTML = String.format(html, fontPt, labelStringWidth);
+        
+        JLabel example = new JLabel(formattedHTML);
         int width = example.getPreferredSize().width;
-        int height = example.getPreferredSize().height;
-
-        columnNames = new GridColumnLegend(width, height);
-        rowNames = new GridRowLegend(new JLabel("000").getPreferredSize().width, height);
-        grid = new LabelGrid(99, 26, width, height);
+        int height = example.getPreferredSize().height + 5;
+        example.setText(String.format(html, fontPt, "0000"));
+        int rowLabelWidth = example.getPreferredSize().width;
+        
+        columnNames = new GridColumnLegend(width, height, fontPt);
+        rowNames = new GridRowLegend(rowLabelWidth, height, fontPt);
+        grid = new LabelGrid(99, 26, width, height, fontPt);
 
         initComponents();
 

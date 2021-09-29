@@ -14,6 +14,8 @@ public class Program
     
     public static void main(String args[])
     {
+        // System.setProperty("sun.java2d.uiScale", "1.5");
+        
         /* Set the Nimbus look and feel  to system default */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.

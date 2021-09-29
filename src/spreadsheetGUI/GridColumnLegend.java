@@ -18,6 +18,7 @@ public class GridColumnLegend extends javax.swing.JPanel
     private int size;
     private int labelWidth;
     private int labelHeight;
+    private float fontSize;
 
     private int selection;
 
@@ -38,6 +39,7 @@ public class GridColumnLegend extends javax.swing.JPanel
         labelWidth = example.getPreferredSize().width;
         labelHeight = example.getPreferredSize().height;
         selection = 0;
+        fontSize = new JLabel().getFont().getSize();
 
         String[] legends = new String[size];
 
@@ -57,6 +59,17 @@ public class GridColumnLegend extends javax.swing.JPanel
      */
     public GridColumnLegend(int width, int height)
     {
+        this(width, height, new JLabel().getFont().getSize());
+    }
+
+    /**
+     * Creates column legends for a ScrollableSpreadsheetPanel using the default
+     * legends and the provided label width and height
+     *
+     * Default legend contains 26 legends labeled A - Z
+     */
+    public GridColumnLegend(int width, int height, float fontSize)
+    {
         super();
 
         JLabel example = new JLabel(DEFAULT_SIZE);
@@ -66,7 +79,8 @@ public class GridColumnLegend extends javax.swing.JPanel
         labelWidth = width;
         labelHeight = height;
         selection = 0;
-
+        this.fontSize = fontSize;
+        
         String[] legends = new String[size];
 
         for (int i = 0; i + 'A' < 'Z' + 1; i++)
@@ -76,7 +90,7 @@ public class GridColumnLegend extends javax.swing.JPanel
 
         initComponents(legends);
     }
-
+    
     /**
      * Creates column legends for a ScrollableSpreadsheetPanel using the default
      * width and height and using legends for column headers
@@ -92,6 +106,7 @@ public class GridColumnLegend extends javax.swing.JPanel
         labelWidth = example.getPreferredSize().width;
         labelHeight = example.getPreferredSize().height;
         selection = 0;
+        fontSize = new JLabel().getFont().getSize();
 
         initComponents(legends);
     }
@@ -118,6 +133,7 @@ public class GridColumnLegend extends javax.swing.JPanel
         this.labelWidth = labelWidth;
         this.labelHeight = labelHeight;
         selection = 0;
+        fontSize = new JLabel().getFont().getSize();
 
         initComponents(legends);
     }
@@ -158,6 +174,7 @@ public class GridColumnLegend extends javax.swing.JPanel
         for (int i = 0; i < legends.length; i++)
         {
             JLabel label = new JLabel();
+            label.setFont(label.getFont().deriveFont(fontSize));
             label.setText(legends[i]);
             label.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
             label.setHorizontalAlignment(SwingConstants.CENTER);

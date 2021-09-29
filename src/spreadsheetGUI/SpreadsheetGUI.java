@@ -56,8 +56,6 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
         aboutMenuItem = new javax.swing.JMenuItem();
         howToUseMenuItem = new javax.swing.JMenuItem();
 
-        spreadsheetProgramDialog.setMaximumSize(new java.awt.Dimension(450, 2147483647));
-
         dialogScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         dialogScrollPane.setAutoscrolls(true);
         dialogScrollPane.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -98,18 +96,26 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
 
+        currentCellLabel.setFont(currentCellLabel.getFont().deriveFont(currentCellLabel.getFont().getSize()+3f));
         currentCellLabel.setText("Current Cell");
 
         currentCellTextField.setEditable(false);
         currentCellTextField.setColumns(5);
+        currentCellTextField.setFont(currentCellTextField.getFont().deriveFont(currentCellTextField.getFont().getSize()+3f));
 
+        valueLabel.setFont(valueLabel.getFont().deriveFont(valueLabel.getFont().getSize()+3f));
         valueLabel.setText("Value");
 
         valueTextField.setEditable(false);
         valueTextField.setColumns(15);
+        valueTextField.setFont(valueTextField.getFont().deriveFont(valueTextField.getFont().getSize()+3f));
 
+        contentsLabel.setFont(contentsLabel.getFont().deriveFont(contentsLabel.getFont().getSize()+3f));
         contentsLabel.setText("Contents");
 
+        contentsTextField.setFont(contentsTextField.getFont().deriveFont(contentsTextField.getFont().getSize()+3f));
+
+        contentsButton.setFont(contentsButton.getFont().deriveFont(contentsButton.getFont().getSize()+3f));
         contentsButton.setText("Enter Contents");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -129,10 +135,10 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
                         .addComponent(valueLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(valueTextField))
-                    .addComponent(contentsTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(contentsTextField))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(contentsButton)
-                .addGap(0, 141, Short.MAX_VALUE))
+                .addGap(0, 25, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -157,30 +163,38 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
         getContentPane().add(spreadsheetPanel, java.awt.BorderLayout.CENTER);
 
         fileMenu.setText("File");
+        fileMenu.setFont(fileMenu.getFont().deriveFont(fileMenu.getFont().getSize()+3f));
 
         newMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        newMenuItem.setFont(newMenuItem.getFont().deriveFont(newMenuItem.getFont().getSize()+3f));
         newMenuItem.setText("New");
         fileMenu.add(newMenuItem);
 
         saveMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        saveMenuItem.setFont(saveMenuItem.getFont().deriveFont(saveMenuItem.getFont().getSize()+3f));
         saveMenuItem.setText("Save");
         fileMenu.add(saveMenuItem);
 
         openMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        openMenuItem.setFont(openMenuItem.getFont().deriveFont(openMenuItem.getFont().getSize()+3f));
         openMenuItem.setText("Open");
         fileMenu.add(openMenuItem);
 
         closeMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        closeMenuItem.setFont(closeMenuItem.getFont().deriveFont(closeMenuItem.getFont().getSize()+3f));
         closeMenuItem.setText("Close");
         fileMenu.add(closeMenuItem);
 
         windowMenuBar.add(fileMenu);
 
         helpMenu.setText("Help");
+        helpMenu.setFont(helpMenu.getFont().deriveFont(helpMenu.getFont().getSize()+3f));
 
+        aboutMenuItem.setFont(aboutMenuItem.getFont().deriveFont(aboutMenuItem.getFont().getSize()+3f));
         aboutMenuItem.setText("About");
         helpMenu.add(aboutMenuItem);
 
+        howToUseMenuItem.setFont(howToUseMenuItem.getFont().deriveFont(howToUseMenuItem.getFont().getSize()+3f));
         howToUseMenuItem.setText("How to use");
         helpMenu.add(howToUseMenuItem);
 

@@ -17,7 +17,8 @@ public class GridRowLegend extends javax.swing.JPanel
     private int size;
     private int labelWidth;
     private int labelHeight;
-
+    private float fontSize;
+    
     private int selection;
 
     /**
@@ -37,6 +38,7 @@ public class GridRowLegend extends javax.swing.JPanel
         labelWidth = example.getPreferredSize().width;
         labelHeight = example.getPreferredSize().height;
         selection = 0;
+        fontSize = new JLabel().getFont().getSize();
 
         String[] legends = new String[size];
 
@@ -66,7 +68,38 @@ public class GridRowLegend extends javax.swing.JPanel
         labelWidth = width;
         labelHeight = height;
         selection = 0;
+        fontSize = new JLabel().getFont().getSize();
+        
+        String[] legends = new String[size];
 
+        for (int i = 0; i < size; i++)
+        {
+            legends[i] = String.valueOf(i + 1);
+        }
+
+        initComponents(legends);
+
+    }
+    
+    /**
+     * Creates row legends for a SpreadsheetPanel using the default legends and
+     * provided label width and height
+     *
+     * Default legend contains 99 legends labeled 1 - 99
+     */
+    public GridRowLegend(int width, int height, float fontSize)
+    {
+        super();
+
+        JLabel example = new JLabel(DEFAULT_SIZE);
+
+        size = 99;
+        labels = new JLabel[size];
+        labelWidth = width;
+        labelHeight = height;
+        selection = 0;
+        this.fontSize = fontSize;
+        
         String[] legends = new String[size];
 
         for (int i = 0; i < size; i++)
@@ -93,7 +126,8 @@ public class GridRowLegend extends javax.swing.JPanel
         labelWidth = example.getPreferredSize().width;
         labelHeight = example.getPreferredSize().height;
         selection = 0;
-
+        fontSize = new JLabel().getFont().getSize();
+        
         initComponents(legends);
     }
 
@@ -119,7 +153,8 @@ public class GridRowLegend extends javax.swing.JPanel
         this.labelWidth = labelWidth;
         this.labelHeight = labelHeight;
         selection = 0;
-
+        fontSize = new JLabel().getFont().getSize();
+        
         initComponents(legends);
     }
 
@@ -131,6 +166,8 @@ public class GridRowLegend extends javax.swing.JPanel
     {
         this((String[]) legends.toArray(), labelWidth, labelHeight);
     }
+    
+    
 
     /**
      * Set this panel's layout as an absolute layout and initialize and place
@@ -159,6 +196,7 @@ public class GridRowLegend extends javax.swing.JPanel
         for (int i = 0; i < legends.length; i++)
         {
             JLabel label = new JLabel();
+            label.setFont(label.getFont().deriveFont(fontSize));
             label.setText(legends[i]);
             label.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
             label.setHorizontalAlignment(SwingConstants.CENTER);
