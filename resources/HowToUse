@@ -3,8 +3,17 @@
     <head>
         <style>
             body {
+                font-size: %fpt;
                 padding-left: 15px;
                 padding-right: 15px;
+            }
+            
+            h1 {
+                font-size: 1.2em;
+            }
+            
+            h2 {
+                font-size: 1.05em;
             }
 
             p {
@@ -30,7 +39,6 @@
 
             .keyboardShortcuts{
                 font-family: monospace;
-                padding-left: 10px;
             }
 
             .description {
@@ -66,7 +74,7 @@
             <div class="categoryItem"> 
                 <b>New:</b>
                 <span class="keyboardShortcuts">
-                    Ctrl + N
+                    &#9;Ctrl + N
                 </span>
                 <div class="description">
                     <p>
@@ -78,7 +86,7 @@
             <div class="categoryItem"> 
                 <b>Save:</b>
                 <span class="keyboardShortcuts">
-                    Ctrl + S
+                    &#9;Ctrl + S
                 </span>
                 <div class="description">
                     <p>
@@ -91,7 +99,7 @@
             <div class="categoryItem"> 
                 <b>Open:</b>
                 <span class="keyboardShortcuts">
-                    Ctrl + O
+                    &#9;Ctrl + O
                 </span>
                 <div class="description">
                     <p>
@@ -104,7 +112,7 @@
             <div class="categoryItem"> 
                 <b>Close:</b>
                 <span class="keyboardShortcuts">
-                    Ctrl + Q
+                    &#9;Ctrl + Q
                 </span>
                 <div class="description">
                     <p>

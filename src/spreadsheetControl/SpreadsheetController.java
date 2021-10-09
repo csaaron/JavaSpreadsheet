@@ -339,7 +339,7 @@ public class SpreadsheetController
     private void openAboutDialog()
     {
         //read file contents
-        String aboutFile = "resources/About.html";
+        String aboutFile = "resources/About";
         String aboutFileText = readFileToString(aboutFile);
 
         // place text in popup
@@ -352,7 +352,7 @@ public class SpreadsheetController
     private void openHowToUseDialog()
     {
         // read file contents
-        String howToUseFile = "resources/HowToUse.html";
+        String howToUseFile = "resources/HowToUse";
         String howToUseFileText = readFileToString(howToUseFile);
 
         // place text in popup

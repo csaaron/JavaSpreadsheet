@@ -2,12 +2,22 @@
     <head>
         <style>
             
+            
             body {
+                font-size: %fpt;
                 padding-left: 15px;
                 padding-right: 15px;
             }
             
-            p {
+            h1 {
+                font-size: 1.2em;
+            }
+            
+            h2 {
+                font-size: 1.05em;
+            }
+            
+            p {                
                 width: 400px;
             }
             

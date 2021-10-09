@@ -3,6 +3,7 @@ package spreadsheetGUI;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowListener;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 
@@ -19,7 +20,11 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
         // keep around a reference to a JFileChooser so location of selected 
         // files will stick around
         fileChooser = new JFileChooser();
+        
+        // get the system default font size
+        fontPt = new JLabel().getFont().getSize() + 3;
 
+        
     }
 
     /**
@@ -163,38 +168,38 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
         getContentPane().add(spreadsheetPanel, java.awt.BorderLayout.CENTER);
 
         fileMenu.setText("File");
-        fileMenu.setFont(fileMenu.getFont().deriveFont(fileMenu.getFont().getSize()+3f));
+        fileMenu.setFont(fileMenu.getFont().deriveFont(fileMenu.getFont().getSize()+2f));
 
         newMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        newMenuItem.setFont(newMenuItem.getFont().deriveFont(newMenuItem.getFont().getSize()+3f));
+        newMenuItem.setFont(newMenuItem.getFont().deriveFont(newMenuItem.getFont().getSize()+2f));
         newMenuItem.setText("New");
         fileMenu.add(newMenuItem);
 
         saveMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        saveMenuItem.setFont(saveMenuItem.getFont().deriveFont(saveMenuItem.getFont().getSize()+3f));
+        saveMenuItem.setFont(saveMenuItem.getFont().deriveFont(saveMenuItem.getFont().getSize()+2f));
         saveMenuItem.setText("Save");
         fileMenu.add(saveMenuItem);
 
         openMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        openMenuItem.setFont(openMenuItem.getFont().deriveFont(openMenuItem.getFont().getSize()+3f));
+        openMenuItem.setFont(openMenuItem.getFont().deriveFont(openMenuItem.getFont().getSize()+2f));
         openMenuItem.setText("Open");
         fileMenu.add(openMenuItem);
 
         closeMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        closeMenuItem.setFont(closeMenuItem.getFont().deriveFont(closeMenuItem.getFont().getSize()+3f));
+        closeMenuItem.setFont(closeMenuItem.getFont().deriveFont(closeMenuItem.getFont().getSize()+2f));
         closeMenuItem.setText("Close");
         fileMenu.add(closeMenuItem);
 
         windowMenuBar.add(fileMenu);
 
         helpMenu.setText("Help");
-        helpMenu.setFont(helpMenu.getFont().deriveFont(helpMenu.getFont().getSize()+3f));
+        helpMenu.setFont(helpMenu.getFont().deriveFont(helpMenu.getFont().getSize()+2f));
 
-        aboutMenuItem.setFont(aboutMenuItem.getFont().deriveFont(aboutMenuItem.getFont().getSize()+3f));
+        aboutMenuItem.setFont(aboutMenuItem.getFont().deriveFont(aboutMenuItem.getFont().getSize()+2f));
         aboutMenuItem.setText("About");
         helpMenu.add(aboutMenuItem);
 
-        howToUseMenuItem.setFont(howToUseMenuItem.getFont().deriveFont(howToUseMenuItem.getFont().getSize()+3f));
+        howToUseMenuItem.setFont(howToUseMenuItem.getFont().deriveFont(howToUseMenuItem.getFont().getSize()+2f));
         howToUseMenuItem.setText("How to use");
         helpMenu.add(howToUseMenuItem);
 
@@ -238,6 +243,7 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
     // End of variables declaration//GEN-END:variables
 
     private JFileChooser fileChooser;
+    private float fontPt;
 
     /**
      * Gets the spreadsheet panel component in this window
@@ -335,7 +341,7 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
             spreadsheetProgramDialog.setVisible(false);
         }
         
-        dialogLabel.setText(message);
+        dialogLabel.setText(String.format(message, fontPt));
         spreadsheetProgramDialog.setTitle(caption);
         spreadsheetProgramDialog.setSize(spreadsheetProgramDialog.getPreferredSize().width, 
                 (int)(spreadsheetProgramDialog.getPreferredSize().width * 0.66));
