@@ -20,11 +20,6 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
         // keep around a reference to a JFileChooser so location of selected 
         // files will stick around
         fileChooser = new JFileChooser();
-        
-        // get the system default font size
-        fontPt = new JLabel().getFont().getSize() + 3;
-
-        
     }
 
     /**
@@ -243,7 +238,6 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
     // End of variables declaration//GEN-END:variables
 
     private JFileChooser fileChooser;
-    private float fontPt;
 
     /**
      * Gets the spreadsheet panel component in this window
@@ -341,7 +335,7 @@ public class SpreadsheetGUI extends javax.swing.JFrame implements ISpreadsheetWi
             spreadsheetProgramDialog.setVisible(false);
         }
         
-        dialogLabel.setText(String.format(message, fontPt));
+        dialogLabel.setText(message);
         spreadsheetProgramDialog.setTitle(caption);
         spreadsheetProgramDialog.setSize(spreadsheetProgramDialog.getPreferredSize().width, 
                 (int)(spreadsheetProgramDialog.getPreferredSize().width * 0.66));

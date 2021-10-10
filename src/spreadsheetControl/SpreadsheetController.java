@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.nio.file.Paths;
 import java.util.Scanner;
 import java.util.Set;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import spreadsheet.InvalidNameException;
 import spreadsheet.Spreadsheet;
@@ -39,7 +40,7 @@ public class SpreadsheetController
     {
         sheet = new Spreadsheet(new CellValidator(), new CellNormalizer(), "ps6");
         window = view;
-
+        
         initView();
         initListeners();
     }
@@ -338,12 +339,15 @@ public class SpreadsheetController
      */
     private void openAboutDialog()
     {
+        // get the system default font size
+        float systemFontPt = new JLabel().getFont().getSize();
+
         //read file contents
         String aboutFile = "resources/About";
         String aboutFileText = readFileToString(aboutFile);
 
         // place text in popup
-        window.showOkayMessageBox(aboutFileText, "About");
+        window.showOkayMessageBox(String.format(aboutFileText, systemFontPt + 3), "About");
     }
 
     /**
@@ -351,12 +355,15 @@ public class SpreadsheetController
      */
     private void openHowToUseDialog()
     {
+        // get the system default font size
+        float systemFontPt = new JLabel().getFont().getSize();
+        
         // read file contents
         String howToUseFile = "resources/HowToUse";
         String howToUseFileText = readFileToString(howToUseFile);
 
         // place text in popup
-        window.showOkayMessageBox(howToUseFileText, "How to Use");
+        window.showOkayMessageBox(String.format(howToUseFileText, systemFontPt + 3), "How to Use");
 
     }
 
