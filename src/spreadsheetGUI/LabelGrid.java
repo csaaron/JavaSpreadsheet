@@ -10,8 +10,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.JLabel;
-import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.helpers.AnnotationHelper;
-import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.helpers.MethodFilter;
+
 
 /**
  * A JPanel consisting of a grid of JLabels
