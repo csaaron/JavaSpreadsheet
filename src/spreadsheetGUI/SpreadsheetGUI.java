@@ -3,7 +3,6 @@ package spreadsheetGUI;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowListener;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 
