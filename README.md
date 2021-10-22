@@ -1,4 +1,3 @@
-
 # Java Spreadsheet
 
 ## About
@@ -11,21 +10,25 @@ Aaron Bellis
 
 ## How To Use
 ### File:
-**New:**  Ctrl + N
-
+#### New: 
 Opens a new (blank) spreadsheet.
 
-**Save:**  Ctrl + S
+Hotkey: Ctrl + N
 
+#### Save:  
 Opens the file explorer for the user to save the current spreadsheet in the preferred location.
 
-**Open:**  Ctrl + O
+Hotkey: Ctrl + S
 
+#### Open:  
 Opens the file explorer for the user to save the current spreadsheet in the preferred location.
 
-**Close:**  Ctrl + Q
+Hotkey: Ctrl + O
 
+#### Close:  
 Closes the current spreadsheet window.
+
+Hotkey: Ctrl + Q
 
 ### Help:
 #### About:
@@ -65,23 +68,23 @@ The four types of allowed symbols in a formula are:
 
 1.  Non-negative numbers written using double-precision floating-point syntax
     
-		 0, 2, 3.14, 6E256
+    0, 2, 3.14, 6E256
     
 2.  Variables that consist of a letter followed by a number between 1-99
     
-	    A3, D9, B14, Z99
+	   A3, D9, B14, Z99
     
 3.  Parentheses
     
-	    (, )
+	   (, )
     
 4.  The four operator symbols
     
-	    +, -, *, /
+	   +, -, *, /
 
 #### Limitations:
 
 Formulas are not capable of handling negative numbers or performing implied multiplication
 
-	✅  =(0 - 3)*(2 + 8)  
-	❌  =-3(2 + 8)
+✅  =(0 - 3)*(2 + 8)  
+❌  =-3(2 + 8)
