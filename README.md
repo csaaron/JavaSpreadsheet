@@ -1,5 +1,7 @@
 # Java Spreadsheet
 
+![Java Spreadsheet in operation](/readme_assets/JavaSpreadsheetDemo.gif)
+
 ## About
 
 ### Purpose
@@ -9,7 +11,6 @@ This program is a simplified spreadsheet program. Its purpose is to track words,
 Aaron Bellis
 
 ## How To Use
-![Java Spreadsheet in operation](/readme_assets/JavaSpreadsheetDemo.gif)
 ### File:
 #### New: 
 Opens a new (blank) spreadsheet.
