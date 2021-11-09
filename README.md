@@ -91,5 +91,5 @@ The four types of allowed symbols in a formula are:
 
 Formulas are not capable of handling negative numbers or performing implied multiplication
 
-<span style="color:#00FF00">✅</span>  =(0 - 3)*(2 + 8)
-<span style="color:#FF0000">❌ </span> =-3(2 + 8)
+<span style="color:green">✅</span>  =(0 - 3)*(2 + 8)
+<span style="color:red">❌</span>  =-3(2 + 8)
