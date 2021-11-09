@@ -12,9 +12,7 @@ Aaron Bellis
 
 ## How To Use
 ### File:
-<div style="display:block; margin:auto;">
 ![Java Spreadsheet in operation](/readme_assets/SpreadsheetDemoFile.png)
-</div>
 #### New: 
 Opens a new (blank) spreadsheet.
 
@@ -36,9 +34,7 @@ Closes the current spreadsheet window.
 Hotkey: Ctrl + Q
 
 ### Help:
-<div style="display:block; margin:auto;">
 ![Java Spreadsheet in operation](/readme_assets/SpreadsheetDemoHelp.png)
-</div>
 #### About:
 
 Text document that provides information about the purpose, author and updates on this program.
@@ -48,9 +44,7 @@ Text document that provides information about the purpose, author and updates on
 Text document that provides information on features about this program.
 
 ### Cell Properties:
-<div style="display:block; margin:auto;">
 ![Java Spreadsheet in operation](/readme_assets/SpreadsheetDemoFull.png)
-</div>
 #### Current Cell:
 
 Non-editable text box that informs the user which cell is selected.
