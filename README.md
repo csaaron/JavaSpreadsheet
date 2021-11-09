@@ -91,5 +91,5 @@ The four types of allowed symbols in a formula are:
 
 Formulas are not capable of handling negative numbers or performing implied multiplication
 
-✅ =(0 - 3)*(2 + 8)
-❌ =-3(2 + 8)
+✅  =(0 - 3)*(2 + 8)  
+❌  =-3(2 + 8)
