@@ -12,7 +12,9 @@ Aaron Bellis
 
 ## How To Use
 ### File:
+<div style="display:block; margin:auto;">
 ![Java Spreadsheet in operation](/readme_assets/SpreadsheetDemoFile.png)
+</div>
 #### New: 
 Opens a new (blank) spreadsheet.
 
@@ -34,7 +36,9 @@ Closes the current spreadsheet window.
 Hotkey: Ctrl + Q
 
 ### Help:
+<div style="display:block; margin:auto;">
 ![Java Spreadsheet in operation](/readme_assets/SpreadsheetDemoHelp.png)
+</div>
 #### About:
 
 Text document that provides information about the purpose, author and updates on this program.
@@ -44,7 +48,9 @@ Text document that provides information about the purpose, author and updates on
 Text document that provides information on features about this program.
 
 ### Cell Properties:
+<div style="display:block; margin:auto;">
 ![Java Spreadsheet in operation](/readme_assets/SpreadsheetDemoFull.png)
+</div>
 #### Current Cell:
 
 Non-editable text box that informs the user which cell is selected.
@@ -91,5 +97,5 @@ The four types of allowed symbols in a formula are:
 
 Formulas are not capable of handling negative numbers or performing implied multiplication
 
-✅  =(0 - 3)*(2 + 8)  
-❌  =-3(2 + 8)
+<span style="color:#00FF00">✅</span>  =(0 - 3)*(2 + 8)
+<span style="color:#FF0000">❌ </span> =-3(2 + 8)
