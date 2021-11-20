@@ -7,6 +7,25 @@
 ### Purpose
 This program is a simplified spreadsheet program. Its purpose is to track words, numbers, and formulas. When specified with an "=", the program will attempt to calculate the given formula. All sheets made in this program are saved with a .sprd extension. You can open multiple windows of this program. Other features include saving, opening, and closing a spreadsheet file. 
 
+### Project Setup
+ This project is implemented using Java 11 and requires a compatible JDK to build. 
+
+ If you are looking for the main method of the project, it can be found in `src/spreadsheetControl/Program.java`
+
+#### Build 
+
+The project can be built from the root project folder using `ant` with the following command: 
+
+```
+ant jar
+```
+#### Run
+For proper operation, the program should be ran from the root project folder using the following command: 
+
+```
+java -jar dist/spreadsheet.jar
+```
+
 ### Author
 Aaron Bellis
 
